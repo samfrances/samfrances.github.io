@@ -33,7 +33,7 @@ Start with an existing django project or create a new one, and make sure the dat
 
     class Post(models.Model):
         title = models.CharField(max_length=120)
-        slug = models.SlugField(max_length=120, unique_for_date=\'publication_date\')
+        slug = models.SlugField(max_length=120, unique_for_date='publication_date')
         publication_date = models.DateTimeField(default=datetime.now)
         body = models.TextField()
         tags = models.ManyToManyField(Tag)
