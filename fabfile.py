@@ -4,6 +4,7 @@ import os
 import shutil
 import sys
 import SocketServer
+from datetime import datetime # User addition
 
 from pelican.server import ComplexHTTPRequestHandler
 
@@ -92,3 +93,38 @@ def gh_pages():
     rebuild()
     local("ghp-import -b {github_pages_branch} {deploy_path}".format(**env))
     local("git push origin {github_pages_branch}".format(**env))
+    
+# Extra utility functions
+
+TEMPLATE = """
+Title: {title}
+Date: {year}-{month}-{day} {hour}:{minute:02d}
+Modified:
+Category:
+Tags:
+Slug: {slug}
+Authors:
+Summary:
+Status:draft
+
+
+
+"""
+
+def make_entry(title):
+    today = datetime.today()
+    slug = title.lower().strip().replace(' ', '-')
+    f_create = "content/{}_{:0>2}_{:0>2}_{}.md".format(
+        today.year, today.month, today.day, slug)
+    t = TEMPLATE.strip().format(title=title,
+                                year=today.year,
+                                month=today.month,
+                                day=today.day,
+                                hour=today.hour,
+                                minute=today.minute,
+                                slug=slug)
+    with open(f_create, 'w') as w:
+        w.write(t)
+    print("File created -> " + f_create)
+
+
