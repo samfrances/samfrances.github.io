@@ -93,7 +93,8 @@ def gh_pages():
     rebuild()
     local("ghp-import -b {github_pages_branch} {deploy_path}".format(**env))
     local("git push origin {github_pages_branch}".format(**env))
-    
+
+
 # Extra utility functions
 
 TEMPLATE = """
