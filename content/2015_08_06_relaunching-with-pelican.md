@@ -5,7 +5,7 @@ Category: Blog
 Tags: python, pelican
 Slug: relaunching-with-pelican
 Authors:
-Summary:
+Summary: After realising that my django-powered site was running on a dangerously old version of django, I've decided to relaunch the site using pelican.
 
 After realising that my django-powered site was running on a dangerously old version of django, I've decided to relaunch the site using [pelican](http://docs.getpelican.com/en/3.6.2/index.html), a python static site generation framework. I reason that if it's good enough for django legend [Daniel Roy Greenfeld](http://www.pydanny.com/my-new-blog.html) it's good enough for me.
 
