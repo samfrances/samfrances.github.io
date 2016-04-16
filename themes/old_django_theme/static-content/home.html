@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load custom_tags %}
+
+{% block navtabs %}
+    {% define 'home' as current_tab %}
+    {{ block.super }}
+{% endblock %}
+
+{% block main_content %}
+   				    <h1>Welcome</h1>
+				
+				    <p>Hello, and welcome to SamFrances.co.uk. Here you will find my various web development and 
+				    programming projects, including:</p>
+				
+				    <ul>
+				        <li>Server-side scripting
+				            <ul>
+				                <li>PHP</li>
+				                <li>Python + Django</li>
+				            </ul>
+				        </li>
+				        <li>Client-side scripting
+				            <ul>
+				                <li>Javascript
+				                    <ul>
+				                        <li>JQuery</li>
+				                        <li>AJAX</li>
+				                    </ul>
+				                </li>
+				            </ul>
+				        </li>
+				        <li>Database programming
+				            <ul>
+				                <li>MySQL</li>
+				                <li>SQLite</li>
+				            </ul>
+				        </li>
+				        <li>Desktop applications and command-line utilities
+				            <ul>
+				                <li>Python</li>
+				            </ul>
+				        </li>
+				    </ul>
+				
+				    				    
+				    <p>More soon.</p>
+{% endblock %}
+
+{% block sidebar_content %}
+   				    <img src="{% get_static_prefix %}images/me.jpg" style="width:180px;border:solid 1px lightgray;margin-top:20px;" alt="Sam Frances" />
+				    <p>
+				        <strong>email:</strong> <a href="mailto:&#115;&#097;&#109;&#064;&#115;&#097;&#109;&#102;&#114;&#097;&#110;&#099;&#101;&#115;&#046;&#099;&#111;&#046;&#117;&#107;">&#115;&#097;&#109;&#064;&#115;&#097;&#109;&#102;&#114;&#097;&#110;&#099;&#101;&#115;&#046;&#099;&#111;&#046;&#117;&#107;</a><br />
+				        <strong>skype:</strong> sam.frances1<br />
+				        <strong>social:</strong> 
+				        <a href="http://www.facebook.com/sam.frances"><img src="{% get_static_prefix %}images/facebook-24.png" style="width:15px;vertical-align:middle;" alt="fb" /></a> 
+				        <a href="http://www.linkedin.com/in/samfrances"><img src="{% get_static_prefix %}images/linkedin-24.png" style="width:15px;vertical-align:middle;" alt="linkedin" /></a>
+				    </p>
+				    <a href="http://stackoverflow.com/users/1256529/samfrances"><img src="http://stackoverflow.com/users/flair/1256529.png" width="200" alt="profile for samfrances at Stack Overflow, Q&amp;A for professional and enthusiast programmers" title="profile for samfrances at Stack Overflow, Q&amp;A for professional and enthusiast programmers"></a><br><br>
+                    
+                    <iframe src="http://githubbadge.appspot.com/badge/samfrances" style="border: 0;height: 142px;width: 200px;overflow: hidden;" frameBorder=0></iframe>
+                    
+                    <a href="http://careers.stackoverflow.com/samfrances" target="_blank"><img src="{% get_static_prefix %}images/logo-careers-2-so.png" style="width:180px;margin-left:5px;"></a>
+{% endblock %}

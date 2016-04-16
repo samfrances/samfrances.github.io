@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load custom_tags %}
+
+{% block title %}Sam Frances | Portfolio{% endblock %}
+
+{% block extra_css %}<link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/portfolio.css" />{% endblock %}
+
+{% block navtabs %}
+    {% define 'portfolio' as current_tab %}
+    {{ block.super }}
+{% endblock %}
+
+{% block main_content %}
+   				    <div class="portfolio-slide">
+   				            <a href="http://www.soundstogether.co.uk/"><img src="{% get_static_prefix %}images/sounds-together-screenshot.png" style="float:right"/></a>
+       				        <h1>Sounds Together Ltd</h1>
+				            
+				            <p>Sounds Together produce phonics programmes for teaching reading in UK schools. The site features an easy-to-navigate tabbed layout and tasteful use of javascript-based animation.</p>
+				            
+				            <p>
+				                Disciplines:
+				                <ul>
+				                    <li>HTML and CSS</li>
+				                    <li>Javascript</li>
+				                    <li>PHP</li>
+				                </ul>
+				            </p>
+				            
+				            <p><a href="http://www.soundstogether.co.uk/">Click here</a> to view the site itself.</p>
+				            
+				    </div>
+{% endblock %}
+
+{% block sidebar %}{% endblock %}

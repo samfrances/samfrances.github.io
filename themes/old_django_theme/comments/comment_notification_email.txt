@@ -1,0 +1,9 @@
+A new comment has been posted on '{{ comment.content_object.title }}'.
+
+User:           {{ comment.user }}
+Name given:     {{ comment.user_name }}
+Email given:    {{ comment.user_email }}
+
+Comment:
+
+{{ comment.comment }}

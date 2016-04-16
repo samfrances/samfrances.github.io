@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+	<head>
+		<title>{% block title %}Sam Frances | Web Development | Programming{% endblock %}</title>
+		<link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/styles.css" />
+		{% block extra_css %}{% endblock %}
+        {% block javascript_in_head %}{% endblock %}
+	</head>
+	
+	<body>
+
+		<div id="wrapper">
+			
+			<div id="header">
+			
+				<div id="logo">
+					<img src="{% get_static_prefix %}images/web.jpg" alt="Logo" />
+				</div>
+				
+				<div id="banner">
+					<h1><strong style="font-size:35">$sam_frances</strong>->web_development($programming) </h1>
+				</div>
+			
+			</div>
+			
+			<div id="nav">
+            {% block navtabs %}
+			    {% include 'nav.inc.html' %}
+            {% endblock %}
+			</div>
+			
+			<div id="main">
+				
+				<div id="content">
+                
+                    {% block main_content %}{% endblock %}
+				    
+				</div>
+				
+				{% block sidebar %}
+				<div id="sidebar">
+				    {% block sidebar_content %}{% endblock %}
+		        </div>
+		        {% endblock %}
+			</div>
+			
+			<div id="footer">
+            {% block footer %}
+				<span>
+				        <a
+                        href="mailto:&#115;&#097;&#109;&#064;&#115;&#097;&#109;&#102;&#114;&#097;&#110;&#099;&#101;&#115;&#046;&#099;&#111;&#046;&#117;&#107;">&#115;&#097;&#109;&#064;&#115;&#097;&#109;&#102;&#114;&#097;&#110;&#099;&#101;&#115;&#046;&#099;&#111;&#046;&#117;&#107;</a>
+                        <a href="http://www.facebook.com/sam.frances"><img src="{% get_static_prefix %}images/facebook-24.png" style="width:15px;vertical-align:middle;" alt="fb" /></a> 
+				        <a href="http://www.linkedin.com/in/samfrances"><img src="{% get_static_prefix %}images/linkedin-24.png" style="width:15px;vertical-align:middle;" alt="linkedin" /></a>
+				</span>
+				<span>&copy; Sam Frances 2012. All Rights Reserved.</span>
+				<p><a href="http://www.djangoproject.com/"><img src="https://www.djangoproject.com/m/img/badges/djangomade124x25.gif" border="0" alt="Made with Django." title="Made with Django." /></a><a href="http://www.python.org/"><img src="http://www.python.org/community/logos/python-powered-w-70x28.png" alt="Python Powered" style="margin-left:10px;" /></a></p> 
+            {% endblock %}
+			</div>
+		</div>
+		
+	</body>
+
+</html>
