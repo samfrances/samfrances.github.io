@@ -1,0 +1,39 @@
+h2.blog_post_heading {
+    margin-bottom:2px;
+    font-size:15pt;
+}
+
+h2.blog_post_heading > a:link, h2.blog_post_heading > a:visited, h2.blog_post_heading > a:active, h2.blog_post_heading > a:hover {
+    color: #3ec008;
+}
+
+h3.blog_post_dateline {
+    margin-top:0px;
+    font-size:10pt;
+    color:#000000;
+    font-weight:normal;
+}
+
+#content pre.code {
+    font-size:9pt;
+    font-family:monospace;
+    white-space: pre-wrap;       /* CSS-3 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+    margin-left:10px;
+}
+
+#content pre.nolinenums {       /* 'nolinenums' is not part of the google-code-prettify API - Sam Frances */
+    padding:10px 0px 10px 10px;
+}
+
+.inline_code {
+    font-size:10pt;
+    font-family:monospace;
+}
+
+#content img {
+    margin-left:10px;
+}

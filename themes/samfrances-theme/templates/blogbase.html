@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<link rel="stylesheet" type="text/css" href="{{ SITEURL }}/{{ THEME_STATIC_DIR }}/css/blog.css" />
+{% endblock %}
+
+{% block sidebar_content %}
+
+    <h3>Tags</h3>
+
+    <p> 
+    {% for tag, articles in tags %}{% if not loop.first %}, {% endif %}<a href="{{ SITEURL }}/{{ tag.url }}">{{ tag }}</a>{% endfor %}
+    </p>
+    
+    <h3>Feeds</h3>
+    
+    <p>
+        {% if FEED_ALL_ATOM %}
+        <a href="{{ FEED_DOMAIN }}/{{ FEED_ALL_ATOM }}" type="application/rss+xml" rel="alternate">
+            <img src="{{ SITEURL }}/{{ THEME_STATIC_DIR }}/images/feed.png" alt="Atom feed" />
+        </a> 
+        <a href="{{ FEED_DOMAIN }}/{{ FEED_ALL_ATOM }}" type="application/rss+xml" rel="alternate">Atom</a><br />
+        {% endif %}
+        {% if FEED_ALL_RSS %}
+        <a href="{{ FEED_DOMAIN }}/{{ FEED_ALL_RSS }}" type="application/rss+xml" rel="alternate">
+            <img src="{{ SITEURL }}/{{ THEME_STATIC_DIR }}/images/feed.png" alt="RSS feed" />
+        </a>
+        <a href="{{ FEED_DOMAIN }}/{{ FEED_ALL_RSS }}" type="application/rss+xml" rel="alternate">RSS</a>
+        {% endif %}
+    </p>
+    
+    {% if LINKS %}
+    <h3>Blogroll</h3>
+        <ul>
+            {% for name, link in LINKS %}
+            <li><a href="{{ link }}">{{ name }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif%}
+
+{% endblock %}

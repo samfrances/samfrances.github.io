@@ -22,7 +22,8 @@ AUTHOR_FEED_RSS = None
 # Blogroll
 LINKS = (('Pelican', 'http://getpelican.com/'),
          ('Python.org', 'http://python.org/'),
-         ('Jinja2', 'http://jinja.pocoo.org/'),)
+         ('Jinja2', 'http://jinja.pocoo.org/'),
+         ('Xophmeister\'s World', 'http://xoph.co/'),)
 
 # Social widget
 SOCIAL = (('stackoverflow', 'http://stackoverflow.com/users/1256529/samfrances'),
@@ -43,4 +44,6 @@ ARTICLE_URL = 'posts/{date:%Y}/{date:%b}/{date:%d}/{slug}/'
 ARTICLE_SAVE_AS = 'posts/{date:%Y}/{date:%b}/{date:%d}/{slug}/index.html'
 PAGE_URL = 'pages/{slug}/'
 PAGE_SAVE_AS = 'pages/{slug}/index.html'
+
+DISPLAY_SEARCH_FORM = True
 
