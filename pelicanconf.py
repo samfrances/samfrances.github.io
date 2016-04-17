@@ -30,7 +30,7 @@ SOCIAL = (('stackoverflow', 'http://stackoverflow.com/users/1256529/samfrances')
           ('github', 'http://github.com/samfrances'),
           ('codewars', 'http://codewars.com/users/samfrances'),)
 
-DEFAULT_PAGINATION = 10
+DEFAULT_PAGINATION = 5
 
 # Uncomment following line if you want document-relative URLs when developing
 #RELATIVE_URLS = True

@@ -6,9 +6,9 @@
 
         {# First item #}
         {% if loop.first and not articles_page.has_previous() %}
-            <aside id="featured" class="body">
+            <aside id="featured">
                 <article>
-                    <h1 class="entry-title"><a href="{{ SITEURL }}/{{ article.url }}">{{ article.title }}</a></h1>
+                    <h2 class="blog_post_heading"><a href="{{ SITEURL }}/{{ article.url }}">{{ article.title }}</a></h2>
                     {% include 'article_infos.html' %}{{ article.content }}{% include 'comments.html' %}
                 </article>
                 {% if loop.length == 1 %}
@@ -16,26 +16,26 @@
                 {% endif %}
             </aside><!-- /#featured -->
             {% if loop.length > 1 %}
-                <section id="content" class="body">
-                    <h1>Other articles</h1>
+                <section id="other_articles">
+                    <h2>Other articles</h2>
                     <ol id="posts-list" class="hfeed">
             {% endif %}
         {# other items #}
         {% else %}
             {% if loop.first and articles_page.has_previous %}
-                <section id="content" class="body">
+                <section id="other_articles">
                     <ol id="posts-list" class="hfeed" start="{{ articles_paginator.per_page -1 }}">
             {% endif %}
             <li><article class="hentry">
                 <header>
-                    <h1><a href="{{ SITEURL }}/{{ article.url }}" rel="bookmark"
-                           title="Permalink to {{ article.title|striptags }}">{{ article.title }}</a></h1>
+                    <h2 class="blog_post_heading"><a href="{{ SITEURL }}/{{ article.url }}" rel="bookmark"
+                           title="Permalink to {{ article.title|striptags }}">{{ article.title }}</a></h2>
                 </header>
 
                 <div class="entry-content">
                 {% include 'article_infos.html' %}
                 {{ article.summary }}
-                <a class="readmore" href="{{ SITEURL }}/{{ article.url }}">read more</a>
+                <p><a class="readmore" href="{{ SITEURL }}/{{ article.url }}">read more</a></p>
                 {% include 'comments.html' %}
                 </div><!-- /.entry-content -->
             </article></li>

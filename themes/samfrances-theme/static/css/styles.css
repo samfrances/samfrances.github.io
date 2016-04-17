@@ -1,3 +1,5 @@
+@import url("pygment.css");
+
 html {
 	height:100%;		/* boiler-plate code to enable the main div to fill the screen height */
 }
@@ -10,7 +12,7 @@ body {
 	font-family:Arial, Helvetica, sans-serif;
 }
 
-p, h1, h2, h3, h4, h5 {
+p, h1, h2, h3, h4, h5, footer {
 	margin-top:10px;
 	margin-bottom:15px;
 	margin-left:5px;
@@ -46,6 +48,25 @@ div {
 	-webkit-box-sizing:border-box;
     box-sizing:border-box;
     margin:0px;
+}
+
+/* for code tables */
+table {width: 100%;}
+
+table.highlighttable, .highlight {
+    font-size:12px;
+}
+
+td.linenos {
+    width:10px;
+}
+
+/* inline code */
+
+code {
+    font-size:smaller;
+    background-color:#f7f7f7;
+    padding:3px;
 }
 
 #wrapper {			/* div to hold other elements and center them */
