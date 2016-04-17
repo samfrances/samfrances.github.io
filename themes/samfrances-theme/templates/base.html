@@ -55,25 +55,10 @@
 			
 			<div id="footer">
             {% block footer %}
-            {% if SOCIAL or FEED_ALL_ATOM or FEED_ALL_RSS %}
-				<span>
-				        <ul>
-                            {% if FEED_ALL_ATOM %}
-                            <li><a href="{{ FEED_DOMAIN }}/{{ FEED_ALL_ATOM }}" type="application/atom+xml" rel="alternate">atom feed</a></li>
-                            {% endif %}
-                            {% if FEED_ALL_RSS %}
-                            <li><a href="{{ FEED_DOMAIN }}/{{ FEED_ALL_RSS }}" type="application/rss+xml" rel="alternate">rss feed</a></li>
-                            {% endif %}
-
-                        {% for name, link in SOCIAL %}
-                            <li><a href="{{ link }}">{{ name }}</a></li>
-                        {% endfor %}
-                        </ul>
-				</span>
-            {% endif %}
-				<span>&copy; Sam Frances 2012. All Rights Reserved.</span>
-				<p><a href="http://www.djangoproject.com/"><img src="https://www.djangoproject.com/m/img/badges/djangomade124x25.gif" border="0" alt="Made with Django." title="Made with Django." /></a><a href="http://www.python.org/"><img src="http://www.python.org/community/logos/python-powered-w-70x28.png" alt="Python Powered" style="margin-left:10px;" /></a></p> 
-            {% endblock %}
+				<span></span>
+				<span>&copy; Sam Frances 2016. All Rights Reserved.</span>
+                <p>Generated with <a href="http://blog.getpelican.com/">Pelican</a>, powered by <a href="https://www.python.org/">Python.</a></p>
+			{% endblock %}
 			</div>
 		</div>
 		

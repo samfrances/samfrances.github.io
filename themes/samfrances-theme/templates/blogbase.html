@@ -12,6 +12,7 @@
     {% for tag, articles in tags %}{% if not loop.first %}, {% endif %}<a href="{{ SITEURL }}/{{ tag.url }}">{{ tag }}</a>{% endfor %}
     </p>
     
+    {% if FEED_ALL_ATOM or FEED_ALL_RSS %}
     <h3>Feeds</h3>
     
     <p>
@@ -28,6 +29,17 @@
         <a href="{{ FEED_DOMAIN }}/{{ FEED_ALL_RSS }}" type="application/rss+xml" rel="alternate">RSS</a>
         {% endif %}
     </p>
+    {% endif %}
+    
+    {% if SOCIAL %}
+    <h3>Social</h3>
+    
+    <ul>
+    {% for name, link in SOCIAL %}
+        <li><a href="{{ link }}">{{ name }}</a></li>
+    {% endfor %}
+    </ul>
+    {% endif %}
     
     {% if LINKS %}
     <h3>Blogroll</h3>
@@ -37,5 +49,7 @@
             {% endfor %}
         </ul>
     {% endif%}
+    
+    
 
 {% endblock %}
