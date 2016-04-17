@@ -1,5 +1,6 @@
 Title: Welcome
 Slug: about
+Template: welcome_page
 
 Hello, and welcome to SamFrances.co.uk. Here you will find my various web development and programming projects, including:
 

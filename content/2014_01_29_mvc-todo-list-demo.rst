@@ -4,7 +4,7 @@ MVC todo list demo
 :date: 2014-01-29
 :modified:
 :category: Blog
-:tags: javascript, html5, tutorials design-patterns
+:tags: javascript, html5, tutorials, design-patterns
 :slug: mvc-todo-list-demo
 :summary: Here's a simple javascript todo list application, which I created as an exercise in javascript MVC without a framework.
 
