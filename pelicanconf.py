@@ -37,7 +37,8 @@ DEFAULT_PAGINATION = 5
 
 # User added from now on
 
-THEME = 'themes/pelican-blueidea'
+#THEME = 'themes/pelican-blueidea'
+THEME = 'themes/samfrances-theme'
 
 # URL setiings
 ARTICLE_URL = 'posts/{date:%Y}/{date:%b}/{date:%d}/{slug}/'
@@ -45,5 +46,4 @@ ARTICLE_SAVE_AS = 'posts/{date:%Y}/{date:%b}/{date:%d}/{slug}/index.html'
 PAGE_URL = 'pages/{slug}/'
 PAGE_SAVE_AS = 'pages/{slug}/index.html'
 
-DISPLAY_SEARCH_FORM = True
 
