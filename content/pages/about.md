@@ -1,4 +1,4 @@
-Title: Welcome
+Title: About
 Slug: about
 Template: welcome_page
 

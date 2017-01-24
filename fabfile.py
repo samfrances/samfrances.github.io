@@ -9,6 +9,8 @@ import confidential # User addition
 
 from pelican.server import ComplexHTTPRequestHandler
 
+import pelicanconf
+
 # Local path configuration (can be absolute or relative to fabfile)
 env.deploy_path = 'output'
 DEPLOY_PATH = env.deploy_path
@@ -38,14 +40,23 @@ def build():
     """Build local version of site"""
     local('pelican -s pelicanconf.py')
 
+    # Make blog category page the index
+    output_path = pelicanconf.OUTPUT_PATH.strip("/")
+    blog_index = pelicanconf.CATEGORY_SAVE_AS.strip("/")
+
+    local('cp {output_path}/{blog_index} {output_path}/index.html'.format(
+        output_path=output_path,
+        blog_index=blog_index.format(slug="blog"),
+    ))
+
 def rebuild():
     """`clean` then `build`"""
     clean()
     build()
 
-def regenerate():
-    """Automatically regenerate site upon file modification"""
-    local('pelican -r -s pelicanconf.py')
+#def regenerate():
+#    """Automatically regenerate site upon file modification"""
+#    local('pelican -r -s pelicanconf.py')
 
 def serve():
     """Serve site at http://localhost:8000/"""
@@ -64,23 +75,23 @@ def reserve():
     build()
     serve()
 
-def preview():
-    """Build production version of site"""
-    local('pelican -s publishconf.py')
+#def preview():
+#    """Build production version of site"""
+#    local('pelican -s publishconf.py')
 
-def cf_upload():
-    """Publish to Rackspace Cloud Files"""
-    rebuild()
-    with lcd(DEPLOY_PATH):
-        local('swift -v -A https://auth.api.rackspacecloud.com/v1.0 '
-              '-U {cloudfiles_username} '
-              '-K {cloudfiles_api_key} '
-              'upload -c {cloudfiles_container} .'.format(**env))
+#def cf_upload():
+#    """Publish to Rackspace Cloud Files"""
+#    rebuild()
+#    with lcd(DEPLOY_PATH):
+#        local('swift -v -A https://auth.api.rackspacecloud.com/v1.0 '
+#              '-U {cloudfiles_username} '
+#              '-K {cloudfiles_api_key} '
+#              'upload -c {cloudfiles_container} .'.format(**env))
 
 @hosts(production)
 def publish():
     """Publish to production via rsync"""
-    local('pelican -s publishconf.py')
+    build()
     project.rsync_project(
         remote_dir=dest_path,
         exclude=".DS_Store",
@@ -89,11 +100,11 @@ def publish():
         extra_opts='-c',
     )
 
-def gh_pages():
-    """Publish to GitHub Pages"""
-    rebuild()
-    local("ghp-import -b {github_pages_branch} {deploy_path}".format(**env))
-    local("git push origin {github_pages_branch}".format(**env))
+#def gh_pages():
+#    """Publish to GitHub Pages"""
+#    rebuild()
+#    local("ghp-import -b {github_pages_branch} {deploy_path}".format(**env))
+#    local("git push origin {github_pages_branch}".format(**env))
 
 
 # Extra utility functions
