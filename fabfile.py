@@ -36,9 +36,12 @@ def clean():
         shutil.rmtree(DEPLOY_PATH)
         os.makedirs(DEPLOY_PATH)
 
-def build():
+def build(publish=False):
     """Build local version of site"""
-    local('pelican -s pelicanconf.py')
+    if publish:
+        local('pelican -s publishconf.py')
+    else:
+        local('pelican -s pelicanconf.py')
 
     # Make blog category page the index
     output_path = pelicanconf.OUTPUT_PATH.strip("/")
@@ -49,10 +52,10 @@ def build():
         blog_index=blog_index.format(slug="blog"),
     ))
 
-def rebuild():
+def rebuild(publish=False):
     """`clean` then `build`"""
     clean()
-    build()
+    build(publish=publish)
 
 #def regenerate():
 #    """Automatically regenerate site upon file modification"""
@@ -91,7 +94,7 @@ def reserve():
 @hosts(production)
 def publish():
     """Publish to production via rsync"""
-    build()
+    rebuild(publish=True)
     project.rsync_project(
         remote_dir=dest_path,
         exclude=".DS_Store",
