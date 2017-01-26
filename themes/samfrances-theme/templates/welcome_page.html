@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}{{ page.title }}{% endblock %}
+{% block title %}{{ page.title }} | {{ SITENAME }}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" type="text/css" href="{{ SITEURL }}/{{ THEME_STATIC_DIR }}/css/blog.css" />
@@ -13,16 +13,16 @@
 				    <p>
 				        <strong>email:</strong> <a href="mailto:&#115;&#097;&#109;&#064;&#115;&#097;&#109;&#102;&#114;&#097;&#110;&#099;&#101;&#115;&#046;&#117;&#107;">&#115;&#097;&#109;&#064;&#115;&#097;&#109;&#102;&#114;&#097;&#110;&#099;&#101;&#115;&#046;&#117;&#107;</a><br />
 				        <strong>skype:</strong> sam.frances1<br />
-				        <strong>social:</strong> 
-                        
+				        <strong>social:</strong>
+
                             {% for name, link in SOCIAL %}
                             <a href="{{ link }}">{{ name }}</a>
                             {% endfor %}
                     </p>
 				    <a href="http://stackoverflow.com/users/1256529/samfrances"><img src="http://stackoverflow.com/users/flair/1256529.png" width="200" alt="profile for samfrances at Stack Overflow, Q&amp;A for professional and enthusiast programmers" title="profile for samfrances at Stack Overflow, Q&amp;A for professional and enthusiast programmers"></a><br><br>
-                    
+
                     <iframe src="http://githubbadge.appspot.com/badge/samfrances" style="border: 0;height: 142px;width: 200px;overflow: hidden;" frameBorder=0></iframe>
-                    
+
                     <a href="http://careers.stackoverflow.com/samfrances" target="_blank"><img src="{{ SITEURL }}/{{ THEME_STATIC_DIR }}/images/logo-careers-2-so.png" style="width:180px;margin-left:5px;"></a>
 
 {% endblock %}
