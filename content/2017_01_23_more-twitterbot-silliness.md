@@ -5,7 +5,7 @@ Category: Blog
 Tags: javascript, node, aws, ansible
 Slug: more-twitterbot-silliness
 Authors:
-Summary:
+Summary: Not content to rest on my laurels after the roaring success that was [@fight_guybrush](https://twitter.com/fight_guybrush), I have written another twitter bot.
 
 
 
@@ -47,7 +47,7 @@ The problem turned out to be in my simple function for introducing misspellings.
 This worked most of the time, but would get into an infinite loop in certain circumstances - for example, if every word in the tweet starts with "@".
 
 I don't know if this is how a node.js expert would do it, but after resolving this bug, I started guarding my loops to catch any unforeseen conditions that would cause them to loop infinitely, and make sure that these were logged as errors.
-    
+
     :::javascript
     function misspellRandomWords(sentence) {
     // ...
