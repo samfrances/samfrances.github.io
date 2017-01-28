@@ -9,3 +9,5 @@ I am a full-stack web development enthusiast living and working near Cambridge, 
 When I’m not coding, I’m learning Spanish, playing guitar, reading, or studying some topic or other that has sparked my interest.
 
 This is my place to record and share some of what I learn, to say “hey, look what I made!”, and to document my journey towards hopefully becoming a better and better developer. I’m mainly talking to myself, but doing so publicly drastically improves the quality of the conversation. If you find what I have written useful, that’s a wonderful bonus.
+
+You can also find me on [Github](https://www.github.com/samfrances), [Stack Overflow](http://stackoverflow.com/users/1256529/samfrances), [Udacity](https://profiles.udacity.com/u/samfrances), and [my CV](https://github.com/samfrances/samfrances-curriculum-vitae) is on Github.
