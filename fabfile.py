@@ -6,6 +6,7 @@ import sys
 import SocketServer
 from datetime import datetime # User addition
 import confidential # User addition
+from uuid import uuid4
 
 from pelican.server import ComplexHTTPRequestHandler
 
@@ -115,6 +116,7 @@ def publish():
 TEMPLATE = """
 Title: {title}
 Date: {year}-{month}-{day} {hour}:{minute:02d}
+UniqueId: {year}-{month}-{day}-{slug}-{uuid}
 Modified:
 Category:
 Tags:
@@ -138,7 +140,8 @@ def make_entry(title):
                                 day=today.day,
                                 hour=today.hour,
                                 minute=today.minute,
-                                slug=slug)
+                                slug=slug,
+                                uuid=uuid4())
     with open(f_create, 'w') as w:
         w.write(t)
     print("File created -> " + f_create)

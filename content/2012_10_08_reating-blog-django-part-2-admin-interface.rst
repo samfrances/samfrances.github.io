@@ -6,6 +6,7 @@ Creating a blog with django, part 2: admin interface
 :category: Blog
 :tags: python, django, tutorials
 :slug: creating-blog-django-part-2-admin-interface
+:uniqueid: 2012-7-3-creating-blog-django-part-2-admin-interface-4065d8f7-22e9-4573-b48b-ad744f79d0c1
 :summary: In part 1 of this series, we defined the models for our blog application. However, aside from `python manage.py shell`, we don't yet have a way to create and edit blog posts or categories. For this, we need to enable django's admin interface.
 
 In `part2 <{filename}2012_7_3_creating-blog-django-part-1-models.md>`_ of this series, we defined the models for our blog application. However, aside from :code:`python manage.py shell`, we don't yet have a way to create and edit blog posts or categories. For this, we need to enable django's admin interface.
@@ -41,7 +42,7 @@ First, we need to import the admin module and the models which we wish to add to
 
 .. code-block:: python
     :linenos: table
-    
+
     # admin.py
 
     from django.contrib import admin
@@ -127,13 +128,13 @@ Now you will see that the slug field is automatically filled in when you enter a
 
     from django.db import models
     from datetime import datetime
-         
+
     class Tag(models.Model):
         name = models.CharField(max_length=20, unique=True)
 
         def __unicode__(self):
             return self.name
-         
+
     class Post(models.Model):
         title = models.CharField(max_length=120)
         slug = models.SlugField(max_length=120, unique_for_date='publication_date')

@@ -1,5 +1,6 @@
 Title: Creating a blog with django, part 1: models
 Date: 2012-7-3 23:43
+UniqueId: 2012-7-3-creating-blog-django-part-1-models-4065d8f7-22e9-4573-b48b-ad744f79d0c1
 Modified:
 Category: Blog
 Tags: python, django, tutorials
