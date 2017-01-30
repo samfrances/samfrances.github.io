@@ -3,3 +3,4 @@ output/
 *~
 *.pyc
 confidential.py
+*.swp
