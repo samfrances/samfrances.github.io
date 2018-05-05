@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-git subtree push --prefix output origin gh-pages
+git push origin `git subtree split --prefix output src`:master --force
