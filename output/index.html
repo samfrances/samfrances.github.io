@@ -3,9 +3,9 @@
 <head>
         <meta charset="utf-8" />
         <title>Blog | Sam Frances' Blog</title>
-        <link rel="stylesheet" href="https://www.samfrances.co.uk/theme/css/styles.css" />
-<link rel="stylesheet" type="text/css" href="https://www.samfrances.co.uk/theme/css/blog.css" />
-        <link href="https://www.samfrances.co.uk/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Sam Frances' Blog Atom Feed" />
+        <link rel="stylesheet" href="../theme/css/styles.css" />
+<link rel="stylesheet" type="text/css" href="../theme/css/blog.css" />
+        <link href="https://samfrances.co.uk/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Sam Frances' Blog Atom Feed" />
 
         <!--[if IE]>
             <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -18,7 +18,7 @@
 			<div id="header">
 			
 				<div id="logo">
-					<img src="https://www.samfrances.co.uk/theme/images/web.jpg" alt="Logo" />
+					<img src="../theme/images/web.jpg" alt="Logo" />
 				</div>
 				
 				<div id="banner">
@@ -30,10 +30,10 @@
 			<div id="nav">
                 <ul>
 
-                    <li class="current_tab"><a href="https://www.samfrances.co.uk/blog/">Blog</a></li>
-                    <li><a href="https://www.samfrances.co.uk/now/">Now</a></li>
+                    <li class="current_tab"><a href="../blog/">Blog</a></li>
+                    <li><a href="../now/">Now</a></li>
 
-                        <li ><a href="https://www.samfrances.co.uk/about/">About</a></li>
+                        <li ><a href="../about/">About</a></li>
                 </ul>			</div>
 			
 			<div id="main">
@@ -43,10 +43,10 @@
 
             <aside id="featured">
                 <article>
-                    <h2 class="blog_post_heading"><a href="https://www.samfrances.co.uk/posts/2017/Jan/23/more-twitterbot-silliness/">More twitterbot silliness</a></h2>
+                    <h2 class="blog_post_heading"><a href="../posts/2017/Jan/23/more-twitterbot-silliness/">More twitterbot silliness</a></h2>
 <footer class="blog_post_dateline">
         <span>Mon 23 January 2017</span>
-<span>| tags: <a href="https://www.samfrances.co.uk/tag/javascript.html">javascript</a>, <a href="https://www.samfrances.co.uk/tag/node.html">node</a>, <a href="https://www.samfrances.co.uk/tag/aws.html">aws</a>, <a href="https://www.samfrances.co.uk/tag/ansible.html">ansible</a></span>
+<span>| tags: <a href="../tag/javascript.html">javascript</a>, <a href="../tag/node.html">node</a>, <a href="../tag/aws.html">aws</a>, <a href="../tag/ansible.html">ansible</a></span>
 </footer><!-- /.post-info --><p>Not content to rest on my laurels after the roaring success that was <a href="https://twitter.com/fight_guybrush">@fight_guybrush</a>, I have written another twitter bot, <a href="https://twitter.com/grauniad_news">@grauniad_news</a>, an exact replica of the twitter feed for The Guardian newspaper, but with added spelling mistakes.</p>
 <p>(For any non-British readers, The Guardian is a UK newspaper with a reputation for spelling mistakes, among other things, giving rise to the nickname "The Grauniad".)</p>
 <p>This bot is a slightly more sophisticated project than the last one, which was just a python script triggered hourly by cron. The new bot is written in node.js, uses Twitter's streaming API to monitor and respond to tweets in real time, and is hosted on an Amazon Web Services t2.nano instance, launched using Ansible. I use the <a href="https://github.com/ttezel/twit">Twit</a> library to communicate with Twitter's API, and <a href="https://github.com/foreverjs/forever">forever</a> to ensure that the bot keeps running continuously.</p>
@@ -107,69 +107,69 @@
 
             <li><article class="hentry">
                 <header>
-                    <h2 class="blog_post_heading"><a href="https://www.samfrances.co.uk/posts/2015/Aug/08/a-monkey-island-inspired-twitterbot/" rel="bookmark"
+                    <h2 class="blog_post_heading"><a href="../posts/2015/Aug/08/a-monkey-island-inspired-twitterbot/" rel="bookmark"
                            title="Permalink to A Monkey Island inspired twitterbot">A Monkey Island inspired twitterbot</a></h2>
                 </header>
 
                 <div class="entry-content">
 <footer class="blog_post_dateline">
         <span>Sat 08 August 2015</span>
-<span>| tags: <a href="https://www.samfrances.co.uk/tag/python.html">python</a></span>
+<span>| tags: <a href="../tag/python.html">python</a></span>
 </footer><!-- /.post-info -->                <p>Just for fun, I've made a rather silly twitterbot inspired by Monkey Island's 'insult sword-fighting'.</p>
-                <p><a class="readmore" href="https://www.samfrances.co.uk/posts/2015/Aug/08/a-monkey-island-inspired-twitterbot/">read more</a></p>
+                <p><a class="readmore" href="../posts/2015/Aug/08/a-monkey-island-inspired-twitterbot/">read more</a></p>
                 </div><!-- /.entry-content -->
             </article></li>
 
             <li><article class="hentry">
                 <header>
-                    <h2 class="blog_post_heading"><a href="https://www.samfrances.co.uk/posts/2015/Aug/06/relaunching-with-pelican/" rel="bookmark"
+                    <h2 class="blog_post_heading"><a href="../posts/2015/Aug/06/relaunching-with-pelican/" rel="bookmark"
                            title="Permalink to Relaunching with Pelican">Relaunching with Pelican</a></h2>
                 </header>
 
                 <div class="entry-content">
 <footer class="blog_post_dateline">
         <span>Thu 06 August 2015</span>
-<span>| tags: <a href="https://www.samfrances.co.uk/tag/python.html">python</a>, <a href="https://www.samfrances.co.uk/tag/pelican.html">pelican</a></span>
+<span>| tags: <a href="../tag/python.html">python</a>, <a href="../tag/pelican.html">pelican</a></span>
 </footer><!-- /.post-info -->                <p>After realising that my django-powered site was running on a dangerously old version of django, I've decided to relaunch the site using pelican.</p>
-                <p><a class="readmore" href="https://www.samfrances.co.uk/posts/2015/Aug/06/relaunching-with-pelican/">read more</a></p>
+                <p><a class="readmore" href="../posts/2015/Aug/06/relaunching-with-pelican/">read more</a></p>
                 </div><!-- /.entry-content -->
             </article></li>
 
             <li><article class="hentry">
                 <header>
-                    <h2 class="blog_post_heading"><a href="https://www.samfrances.co.uk/posts/2014/Jan/29/mvc-todo-list-demo/" rel="bookmark"
+                    <h2 class="blog_post_heading"><a href="../posts/2014/Jan/29/mvc-todo-list-demo/" rel="bookmark"
                            title="Permalink to MVC todo list demo">MVC todo list demo</a></h2>
                 </header>
 
                 <div class="entry-content">
 <footer class="blog_post_dateline">
         <span>Wed 29 January 2014</span>
-<span>| tags: <a href="https://www.samfrances.co.uk/tag/javascript.html">javascript</a>, <a href="https://www.samfrances.co.uk/tag/html5.html">html5</a>, <a href="https://www.samfrances.co.uk/tag/tutorials.html">tutorials</a>, <a href="https://www.samfrances.co.uk/tag/design-patterns.html">design-patterns</a></span>
+<span>| tags: <a href="../tag/javascript.html">javascript</a>, <a href="../tag/html5.html">html5</a>, <a href="../tag/tutorials.html">tutorials</a>, <a href="../tag/design-patterns.html">design-patterns</a></span>
 </footer><!-- /.post-info -->                <p class="first last">Here's a simple javascript todo list application, which I created as an exercise in javascript MVC without a framework.</p>
 
-                <p><a class="readmore" href="https://www.samfrances.co.uk/posts/2014/Jan/29/mvc-todo-list-demo/">read more</a></p>
+                <p><a class="readmore" href="../posts/2014/Jan/29/mvc-todo-list-demo/">read more</a></p>
                 </div><!-- /.entry-content -->
             </article></li>
 
             <li><article class="hentry">
                 <header>
-                    <h2 class="blog_post_heading"><a href="https://www.samfrances.co.uk/posts/2012/Oct/08/canvas-drag-and-drop-example/" rel="bookmark"
+                    <h2 class="blog_post_heading"><a href="../posts/2012/Oct/08/canvas-drag-and-drop-example/" rel="bookmark"
                            title="Permalink to A canvas drag and drop example">A canvas drag and drop example</a></h2>
                 </header>
 
                 <div class="entry-content">
 <footer class="blog_post_dateline">
         <span>Mon 08 October 2012</span>
-<span>| tags: <a href="https://www.samfrances.co.uk/tag/javascript.html">javascript</a>, <a href="https://www.samfrances.co.uk/tag/html5.html">html5</a>, <a href="https://www.samfrances.co.uk/tag/canvas.html">canvas</a>, <a href="https://www.samfrances.co.uk/tag/tutorials.html">tutorials</a></span>
+<span>| tags: <a href="../tag/javascript.html">javascript</a>, <a href="../tag/html5.html">html5</a>, <a href="../tag/canvas.html">canvas</a>, <a href="../tag/tutorials.html">tutorials</a></span>
 </footer><!-- /.post-info -->                <p class="first last">I've recently unearthed an old piece of code which uses multiple layered HTML5 canvas elements to create a multi-layered drag and drop effect. The code is probably due some refinements, but I thought I'd post a link just for fun.</p>
 
-                <p><a class="readmore" href="https://www.samfrances.co.uk/posts/2012/Oct/08/canvas-drag-and-drop-example/">read more</a></p>
+                <p><a class="readmore" href="../posts/2012/Oct/08/canvas-drag-and-drop-example/">read more</a></p>
                 </div><!-- /.entry-content -->
             </article></li>
             </ol><!-- /#posts-list -->
 <p class="paginator">
     Page 1 / 2
-        <a href="https://www.samfrances.co.uk/blog/index2.html">&raquo;</a>
+        <a href="../blog/index2.html">&raquo;</a>
 </p>
             </section><!-- /#content -->
 				    
@@ -180,15 +180,15 @@
     <h3>Tags</h3>
 
     <p> 
-<a href="https://www.samfrances.co.uk/tag/node.html">node</a>, <a href="https://www.samfrances.co.uk/tag/pelican.html">pelican</a>, <a href="https://www.samfrances.co.uk/tag/canvas.html">canvas</a>, <a href="https://www.samfrances.co.uk/tag/design-patterns.html">design-patterns</a>, <a href="https://www.samfrances.co.uk/tag/python.html">python</a>, <a href="https://www.samfrances.co.uk/tag/javascript.html">javascript</a>, <a href="https://www.samfrances.co.uk/tag/aws.html">aws</a>, <a href="https://www.samfrances.co.uk/tag/django.html">django</a>, <a href="https://www.samfrances.co.uk/tag/ansible.html">ansible</a>, <a href="https://www.samfrances.co.uk/tag/html5.html">html5</a>, <a href="https://www.samfrances.co.uk/tag/tutorials.html">tutorials</a>    </p>
+<a href="../tag/node.html">node</a>, <a href="../tag/pelican.html">pelican</a>, <a href="../tag/canvas.html">canvas</a>, <a href="../tag/design-patterns.html">design-patterns</a>, <a href="../tag/python.html">python</a>, <a href="../tag/javascript.html">javascript</a>, <a href="../tag/aws.html">aws</a>, <a href="../tag/django.html">django</a>, <a href="../tag/ansible.html">ansible</a>, <a href="../tag/html5.html">html5</a>, <a href="../tag/tutorials.html">tutorials</a>    </p>
     
     <h3>Feeds</h3>
     
     <p>
-        <a href="https://www.samfrances.co.uk/feeds/all.atom.xml" type="application/rss+xml" rel="alternate">
-            <img src="https://www.samfrances.co.uk/theme/images/feed.png" alt="Atom feed" />
+        <a href="https://samfrances.co.uk/feeds/all.atom.xml" type="application/rss+xml" rel="alternate">
+            <img src="../theme/images/feed.png" alt="Atom feed" />
         </a> 
-        <a href="https://www.samfrances.co.uk/feeds/all.atom.xml" type="application/rss+xml" rel="alternate">Atom</a><br />
+        <a href="https://samfrances.co.uk/feeds/all.atom.xml" type="application/rss+xml" rel="alternate">Atom</a><br />
     </p>
     
     <h3>Social</h3>
