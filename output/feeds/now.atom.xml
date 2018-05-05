@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Sam Frances' Blog</title><link href="https://www.samfrances.co.uk/" rel="alternate"></link><link href="https://www.samfrances.co.uk/feeds/now.atom.xml" rel="self"></link><id>https://www.samfrances.co.uk/</id><updated>2018-05-05T00:00:00+01:00</updated><entry><title>What I'm doing now</title><link href="https://www.samfrances.co.uk/posts/2018/Mar/28/now-8/" rel="alternate"></link><updated>2018-05-05T00:00:00+01:00</updated><author><name>Sam Frances</name></author><id>tag:www.samfrances.co.uk,2018-03-28:posts/2018/Mar/28/now-8/</id><summary type="html">&lt;p&gt;&lt;em&gt;(This is my &lt;a href="http://nownownow.com/about"&gt;now page&lt;/a&gt;. It tells you what I'm doing at the moment. It also reminds &lt;strong&gt;me&lt;/strong&gt; what I have decided I want to be doing at the moment.)&lt;/em&gt;&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Sam Frances' Blog</title><link href="https://www.samfrances.co.uk/" rel="alternate"></link><link href="https://www.samfrances.co.uk/feeds/now.atom.xml" rel="self"></link><id>https://www.samfrances.co.uk/</id><updated>2018-05-06T00:00:00+01:00</updated><entry><title>What I'm doing now</title><link href="https://www.samfrances.co.uk/posts/2018/Mar/28/now-8/" rel="alternate"></link><updated>2018-05-06T00:00:00+01:00</updated><author><name>Sam Frances</name></author><id>tag:www.samfrances.co.uk,2018-03-28:posts/2018/Mar/28/now-8/</id><summary type="html">&lt;p&gt;&lt;em&gt;(This is my &lt;a href="http://nownownow.com/about"&gt;now page&lt;/a&gt;. It tells you what I'm doing at the moment. It also reminds &lt;strong&gt;me&lt;/strong&gt; what I have decided I want to be doing at the moment.)&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;Reading:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&amp;#43; &lt;a href="https://pragprog.com/book/cdc-elixir/learn-functional-programming-with-elixir"&gt;Learn Functional Programming with Elixir&lt;/a&gt;
@@ -39,7 +39,7 @@
 &lt;p&gt;Working on:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Lots of interesting stuff for &lt;a href="https://cydarmedical.com/"&gt;Cydar&lt;/a&gt;, involving things like Django Rest Framework, Celery, Ansible, and AWS&lt;/li&gt;
-&lt;/ul&gt;</summary></entry><entry><title>What I'm doing now</title><link href="https://www.samfrances.co.uk/posts/2017/Dec/11/now-7/" rel="alternate"></link><updated>2018-05-05T00:00:00+01:00</updated><author><name>Sam Frances</name></author><id>tag:www.samfrances.co.uk,2017-12-11:posts/2017/Dec/11/now-7/</id><summary type="html">&lt;p&gt;&lt;em&gt;(This is my &lt;a href="http://nownownow.com/about"&gt;now page&lt;/a&gt;. It tells you what I'm doing at the moment. It also reminds &lt;strong&gt;me&lt;/strong&gt; what I have decided I want to be doing at the moment.)&lt;/em&gt;&lt;/p&gt;
+&lt;/ul&gt;</summary></entry><entry><title>What I'm doing now</title><link href="https://www.samfrances.co.uk/posts/2017/Dec/11/now-7/" rel="alternate"></link><updated>2018-05-06T00:00:00+01:00</updated><author><name>Sam Frances</name></author><id>tag:www.samfrances.co.uk,2017-12-11:posts/2017/Dec/11/now-7/</id><summary type="html">&lt;p&gt;&lt;em&gt;(This is my &lt;a href="http://nownownow.com/about"&gt;now page&lt;/a&gt;. It tells you what I'm doing at the moment. It also reminds &lt;strong&gt;me&lt;/strong&gt; what I have decided I want to be doing at the moment.)&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;Reading:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&amp;#43; &lt;a href="http://shop.oreilly.com/product/0636920046189.do"&gt;Concurrency in Go&lt;/a&gt; by Katherine Cox-Buday&lt;/li&gt;
@@ -71,7 +71,7 @@
 &lt;p&gt;Working on:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Lots of interesting stuff for &lt;a href="https://cydarmedical.com/"&gt;Cydar&lt;/a&gt;, involving things like Django Rest Framework, Celery, Ansible, and AWS&lt;/li&gt;
-&lt;/ul&gt;</summary></entry><entry><title>What I'm doing now</title><link href="https://www.samfrances.co.uk/posts/2017/Nov/19/now-6/" rel="alternate"></link><updated>2018-05-05T00:00:00+01:00</updated><author><name>Sam Frances</name></author><id>tag:www.samfrances.co.uk,2017-11-19:posts/2017/Nov/19/now-6/</id><summary type="html">&lt;p&gt;&lt;em&gt;(This is my &lt;a href="http://nownownow.com/about"&gt;now page&lt;/a&gt;. It tells you what I'm doing at the moment. It also reminds &lt;strong&gt;me&lt;/strong&gt; what I have decided I want to be doing at the moment.)&lt;/em&gt;&lt;/p&gt;
+&lt;/ul&gt;</summary></entry><entry><title>What I'm doing now</title><link href="https://www.samfrances.co.uk/posts/2017/Nov/19/now-6/" rel="alternate"></link><updated>2018-05-06T00:00:00+01:00</updated><author><name>Sam Frances</name></author><id>tag:www.samfrances.co.uk,2017-11-19:posts/2017/Nov/19/now-6/</id><summary type="html">&lt;p&gt;&lt;em&gt;(This is my &lt;a href="http://nownownow.com/about"&gt;now page&lt;/a&gt;. It tells you what I'm doing at the moment. It also reminds &lt;strong&gt;me&lt;/strong&gt; what I have decided I want to be doing at the moment.)&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;Reading:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;del&gt;&lt;a href="http://shop.oreilly.com/product/0636920049579.do"&gt;Learning React&lt;/a&gt; by Alex Banks &amp;amp; Eve Porcello&lt;/del&gt; (finished)&lt;/li&gt;
@@ -107,7 +107,7 @@
 &lt;p&gt;Working on:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Lots of interesting stuff for &lt;a href="https://cydarmedical.com/"&gt;Cydar&lt;/a&gt;, involving things like Django Rest Framework, Celery, Ansible, and AWS&lt;/li&gt;
-&lt;/ul&gt;</summary></entry><entry><title>What I'm doing now</title><link href="https://www.samfrances.co.uk/posts/2017/Apr/24/now-5/" rel="alternate"></link><updated>2018-05-05T00:00:00+01:00</updated><author><name>Sam Frances</name></author><id>tag:www.samfrances.co.uk,2017-04-24:posts/2017/Apr/24/now-5/</id><summary type="html">&lt;p&gt;&lt;em&gt;(This is my &lt;a href="http://nownownow.com/about"&gt;now page&lt;/a&gt;. It tells you what I'm doing at the moment. It also reminds &lt;strong&gt;me&lt;/strong&gt; what I have decided I want to be doing at the moment.)&lt;/em&gt;&lt;/p&gt;
+&lt;/ul&gt;</summary></entry><entry><title>What I'm doing now</title><link href="https://www.samfrances.co.uk/posts/2017/Apr/24/now-5/" rel="alternate"></link><updated>2018-05-06T00:00:00+01:00</updated><author><name>Sam Frances</name></author><id>tag:www.samfrances.co.uk,2017-04-24:posts/2017/Apr/24/now-5/</id><summary type="html">&lt;p&gt;&lt;em&gt;(This is my &lt;a href="http://nownownow.com/about"&gt;now page&lt;/a&gt;. It tells you what I'm doing at the moment. It also reminds &lt;strong&gt;me&lt;/strong&gt; what I have decided I want to be doing at the moment.)&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;Reading:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href="https://www.ansiblefordevops.com/"&gt;Ansible for DevOps&lt;/a&gt; by Jeff Geerling&lt;/li&gt;
@@ -148,7 +148,7 @@
 &lt;p&gt;Other things:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;I'm getting back into studying Spanish after a few months off.&lt;/li&gt;
-&lt;/ul&gt;</summary></entry><entry><title>What I'm doing now</title><link href="https://www.samfrances.co.uk/posts/2017/Feb/14/now-4/" rel="alternate"></link><updated>2018-05-05T00:00:00+01:00</updated><author><name>Sam Frances</name></author><id>tag:www.samfrances.co.uk,2017-02-14:posts/2017/Feb/14/now-4/</id><summary type="html">&lt;p&gt;&lt;em&gt;(This is my &lt;a href="http://nownownow.com/about"&gt;now page&lt;/a&gt;. It tells you what I'm doing at the moment. It also reminds &lt;strong&gt;me&lt;/strong&gt; what I have decided I want to be doing at the moment.)&lt;/em&gt;&lt;/p&gt;
+&lt;/ul&gt;</summary></entry><entry><title>What I'm doing now</title><link href="https://www.samfrances.co.uk/posts/2017/Feb/14/now-4/" rel="alternate"></link><updated>2018-05-06T00:00:00+01:00</updated><author><name>Sam Frances</name></author><id>tag:www.samfrances.co.uk,2017-02-14:posts/2017/Feb/14/now-4/</id><summary type="html">&lt;p&gt;&lt;em&gt;(This is my &lt;a href="http://nownownow.com/about"&gt;now page&lt;/a&gt;. It tells you what I'm doing at the moment. It also reminds &lt;strong&gt;me&lt;/strong&gt; what I have decided I want to be doing at the moment.)&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;Reading:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;del&gt;&lt;a href="http://shop.oreilly.com/product/9780596517748.do"&gt;JavaScript: The Good Parts&lt;/a&gt; by Douglas Crockford&lt;/del&gt;
@@ -188,7 +188,7 @@
 &lt;p&gt;Other things:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;I'm getting back into studying Spanish after a few months off.&lt;/li&gt;
-&lt;/ul&gt;</summary></entry><entry><title>What I'm doing now</title><link href="https://www.samfrances.co.uk/posts/2017/Feb/11/now-3/" rel="alternate"></link><updated>2018-05-05T00:00:00+01:00</updated><author><name>Sam Frances</name></author><id>tag:www.samfrances.co.uk,2017-02-11:posts/2017/Feb/11/now-3/</id><summary type="html">&lt;p&gt;&lt;em&gt;(This is my &lt;a href="http://nownownow.com/about"&gt;now page&lt;/a&gt;. It tells you what I'm doing at the moment. It also reminds &lt;strong&gt;me&lt;/strong&gt; what I have decided I want to be doing at the moment.)&lt;/em&gt;&lt;/p&gt;
+&lt;/ul&gt;</summary></entry><entry><title>What I'm doing now</title><link href="https://www.samfrances.co.uk/posts/2017/Feb/11/now-3/" rel="alternate"></link><updated>2018-05-06T00:00:00+01:00</updated><author><name>Sam Frances</name></author><id>tag:www.samfrances.co.uk,2017-02-11:posts/2017/Feb/11/now-3/</id><summary type="html">&lt;p&gt;&lt;em&gt;(This is my &lt;a href="http://nownownow.com/about"&gt;now page&lt;/a&gt;. It tells you what I'm doing at the moment. It also reminds &lt;strong&gt;me&lt;/strong&gt; what I have decided I want to be doing at the moment.)&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;Reading:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href="http://shop.oreilly.com/product/9780596517748.do"&gt;JavaScript: The Good Parts&lt;/a&gt; by Douglas Crockford&lt;/li&gt;
@@ -227,7 +227,7 @@
 &lt;p&gt;Other things:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;I'm getting back into studying Spanish after a few months off.&lt;/li&gt;
-&lt;/ul&gt;</summary></entry><entry><title>What I'm doing now</title><link href="https://www.samfrances.co.uk/posts/2017/Feb/02/now-2/" rel="alternate"></link><updated>2018-05-05T00:00:00+01:00</updated><author><name>Sam Frances</name></author><id>tag:www.samfrances.co.uk,2017-02-02:posts/2017/Feb/02/now-2/</id><summary type="html">&lt;p&gt;&lt;em&gt;(This is my &lt;a href="http://nownownow.com/about"&gt;now page&lt;/a&gt;. It tells you what I'm doing at the moment. It also reminds &lt;strong&gt;me&lt;/strong&gt; what I have decided I want to be doing at the moment.)&lt;/em&gt;&lt;/p&gt;
+&lt;/ul&gt;</summary></entry><entry><title>What I'm doing now</title><link href="https://www.samfrances.co.uk/posts/2017/Feb/02/now-2/" rel="alternate"></link><updated>2018-05-06T00:00:00+01:00</updated><author><name>Sam Frances</name></author><id>tag:www.samfrances.co.uk,2017-02-02:posts/2017/Feb/02/now-2/</id><summary type="html">&lt;p&gt;&lt;em&gt;(This is my &lt;a href="http://nownownow.com/about"&gt;now page&lt;/a&gt;. It tells you what I'm doing at the moment. It also reminds &lt;strong&gt;me&lt;/strong&gt; what I have decided I want to be doing at the moment.)&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;Reading:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;del&gt;&lt;a href="https://www.stevefenton.co.uk/publications/typescript-for-javascript-programmers/"&gt;TypeScript for Javascript
@@ -269,7 +269,7 @@
 &lt;ul&gt;
 &lt;li&gt;I'm getting back into studying Spanish after a few months off.&lt;/li&gt;
 &lt;li&gt;I have ordered a running machine! This way I can exercise in my pyjamas while watching Netflix. My plan is to make exercise so convenient that I can't find an excuse not to do it.&lt;/li&gt;
-&lt;/ul&gt;</summary></entry><entry><title>What I'm doing now</title><link href="https://www.samfrances.co.uk/posts/2017/Jan/30/now-1/" rel="alternate"></link><updated>2018-05-05T00:00:00+01:00</updated><author><name>Sam Frances</name></author><id>tag:www.samfrances.co.uk,2017-01-30:posts/2017/Jan/30/now-1/</id><summary type="html">&lt;p&gt;&lt;em&gt;(This is my &lt;a href="http://nownownow.com/about"&gt;now page&lt;/a&gt;. It tells you what I'm doing at the moment. It also reminds &lt;strong&gt;me&lt;/strong&gt; what I have decided I want to be doing at the moment.)&lt;/em&gt;&lt;/p&gt;
+&lt;/ul&gt;</summary></entry><entry><title>What I'm doing now</title><link href="https://www.samfrances.co.uk/posts/2017/Jan/30/now-1/" rel="alternate"></link><updated>2018-05-06T00:00:00+01:00</updated><author><name>Sam Frances</name></author><id>tag:www.samfrances.co.uk,2017-01-30:posts/2017/Jan/30/now-1/</id><summary type="html">&lt;p&gt;&lt;em&gt;(This is my &lt;a href="http://nownownow.com/about"&gt;now page&lt;/a&gt;. It tells you what I'm doing at the moment. It also reminds &lt;strong&gt;me&lt;/strong&gt; what I have decided I want to be doing at the moment.)&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;Reading:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href="https://www.stevefenton.co.uk/publications/typescript-for-javascript-programmers/"&gt;TypeScript for Javascript
@@ -309,7 +309,7 @@
 &lt;ul&gt;
 &lt;li&gt;I'm getting back into studying Spanish after a few months off.&lt;/li&gt;
 &lt;li&gt;I have ordered a running machine! This way I can exercise in my pyjamas while watching Netflix. My plan is to make exercise so convenient that I can't find an excuse not to do it.&lt;/li&gt;
-&lt;/ul&gt;</summary></entry><entry><title>What I'm doing now</title><link href="https://www.samfrances.co.uk/posts/2017/Jan/28/now-0/" rel="alternate"></link><updated>2018-05-05T00:00:00+01:00</updated><author><name>Sam Frances</name></author><id>tag:www.samfrances.co.uk,2017-01-28:posts/2017/Jan/28/now-0/</id><summary type="html">&lt;p&gt;&lt;em&gt;(This is my &lt;a href="http://nownownow.com/about"&gt;now page&lt;/a&gt;. It tells you what I'm doing at the moment. It also reminds &lt;strong&gt;me&lt;/strong&gt; what I have decided I want to be doing at the moment.)&lt;/em&gt;&lt;/p&gt;
+&lt;/ul&gt;</summary></entry><entry><title>What I'm doing now</title><link href="https://www.samfrances.co.uk/posts/2017/Jan/28/now-0/" rel="alternate"></link><updated>2018-05-06T00:00:00+01:00</updated><author><name>Sam Frances</name></author><id>tag:www.samfrances.co.uk,2017-01-28:posts/2017/Jan/28/now-0/</id><summary type="html">&lt;p&gt;&lt;em&gt;(This is my &lt;a href="http://nownownow.com/about"&gt;now page&lt;/a&gt;. It tells you what I'm doing at the moment. It also reminds &lt;strong&gt;me&lt;/strong&gt; what I have decided I want to be doing at the moment.)&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;Reading:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href="https://www.stevefenton.co.uk/publications/typescript-for-javascript-programmers/"&gt;TypeScript for Javascript

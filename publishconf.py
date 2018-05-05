@@ -15,8 +15,8 @@ with open("CNAME", "r") as f:
         f.read().strip()
     )
 
-SITEURL = 'https://www.samfrances.co.uk'
-RELATIVE_URLS = False
+SITEURL = 'https://samfrances.co.uk'
+RELATIVE_URLS = True
 
 FEED_ALL_ATOM = 'feeds/all.atom.xml'
 CATEGORY_FEED_ATOM = 'feeds/%s.atom.xml'
