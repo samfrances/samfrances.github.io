@@ -10,7 +10,12 @@ import sys
 sys.path.append(os.curdir)
 from pelicanconf import *
 
-SITEURL = 'http://www.samfrances.co.uk'
+with open("CNAME", "r") as f:
+    SITEURL = "https://{}".format(
+        f.read().strip()
+    )
+
+SITEURL = 'https://www.samfrances.co.uk'
 RELATIVE_URLS = False
 
 FEED_ALL_ATOM = 'feeds/all.atom.xml'

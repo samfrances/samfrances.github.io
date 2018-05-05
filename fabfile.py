@@ -44,6 +44,9 @@ def build(publish=False):
     else:
         local('pelican -s pelicanconf.py')
 
+    # Copy CNAME file (for Github Pages)
+    local('cp CNAME {}/'.format(DEPLOY_PATH))
+
     # Make blog category page the index
     output_path = pelicanconf.OUTPUT_PATH.strip("/")
     blog_index = pelicanconf.CATEGORY_SAVE_AS.strip("/")
