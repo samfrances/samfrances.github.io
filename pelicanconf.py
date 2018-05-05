@@ -34,7 +34,7 @@ SOCIAL = (('stackoverflow', 'http://stackoverflow.com/users/1256529/samfrances')
 DEFAULT_PAGINATION = 5
 
 # Uncomment following line if you want document-relative URLs when developing
-#RELATIVE_URLS = True
+RELATIVE_URLS = True
 
 # User added from now on
 
