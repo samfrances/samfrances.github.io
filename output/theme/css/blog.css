@@ -1,0 +1,29 @@
+h2.blog_post_heading {
+    margin-bottom:2px;
+    font-size:15pt;
+}
+
+ol#posts-list {
+    list-style-type:none;
+    padding-left:15px;
+}
+
+h2.blog_post_heading > a:link, h2.blog_post_heading > a:visited, h2.blog_post_heading > a:active, h2.blog_post_heading > a:hover {
+    color: #3ec008;
+}
+
+footer.blog_post_dateline {
+    margin-top:0px;
+    font-size:10pt;
+    color:#000000;
+    font-weight:normal;
+}
+
+.inline_code {
+    font-size:10pt;
+    font-family:monospace;
+}
+
+#content img {
+    margin-left:10px;
+}

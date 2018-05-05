@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Creating a blog with django, part 2: admin interface | Sam Frances' Blog</title>
+        <link rel="stylesheet" href="http://www.samfrances.co.uk/theme/css/styles.css" />
+<link rel="stylesheet" type="text/css" href="http://www.samfrances.co.uk/theme/css/blog.css" />
+        <link href="http://www.samfrances.co.uk/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Sam Frances' Blog Atom Feed" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+	<body>
+
+		<div id="wrapper">
+			
+			<div id="header">
+			
+				<div id="logo">
+					<img src="http://www.samfrances.co.uk/theme/images/web.jpg" alt="Logo" />
+				</div>
+				
+				<div id="banner">
+					<h1><strong style="font-size:35">$sam_frances</strong>->web_development($programming) </h1>
+				</div>
+			
+			</div>
+			
+			<div id="nav">
+                <ul>
+
+                    <li class="current_tab"><a href="http://www.samfrances.co.uk/blog/">Blog</a></li>
+                    <li><a href="http://www.samfrances.co.uk/now/">Now</a></li>
+
+                        <li ><a href="http://www.samfrances.co.uk/about/">About</a></li>
+                </ul>			</div>
+			
+			<div id="main">
+				
+				<div id="content">
+                
+  <article>
+    <header>
+      <h2 class="blog_post_heading">
+        <a href="http://www.samfrances.co.uk/posts/2012/Jul/03/creating-blog-django-part-2-admin-interface/" rel="bookmark"
+           title="Permalink to Creating a blog with django, part 2: admin interface">Creating a blog with django, part 2: admin interface</a></h1>
+    </header>
+
+    <div class="entry-content">
+<footer class="blog_post_dateline">
+        <span>Tue 03 July 2012</span>
+<span>| tags: <a href="http://www.samfrances.co.uk/tag/python.html">python</a>, <a href="http://www.samfrances.co.uk/tag/django.html">django</a>, <a href="http://www.samfrances.co.uk/tag/tutorials.html">tutorials</a></span>
+</footer><!-- /.post-info -->      <p>In <a class="reference external" href="http://www.samfrances.co.uk/posts/2012/Jul/03/creating-blog-django-part-1-models/">part2</a> of this series, we defined the models for our blog application. However, aside from <code>python manage.py shell</code>, we don't yet have a way to create and edit blog posts or categories. For this, we need to enable django's admin interface.</p>
+<p><strong>Note: this tutorial was written for django 1.3, and is therefore out of date.</strong></p>
+<p>If you haven't already done so, enable the admin interface by adding <code>django.contrib.admin</code> to the <code>INSTALLED_APPS</code> setting, and uncommenting the relevant lines in the main project urlconf, <code>mysite/urls.py</code>.</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17</pre></div></td><td class="code"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf.urls.defaults</span> <span class="kn">import</span> <span class="n">patterns</span><span class="p">,</span> <span class="n">include</span><span class="p">,</span> <span class="n">url</span>
+
+<span class="c"># Uncomment the next two lines to enable the admin:</span>
+<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<span class="n">admin</span><span class="o">.</span><span class="n">autodiscover</span><span class="p">()</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">patterns</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+    <span class="c"># Examples:</span>
+    <span class="c"># url(r&#39;^$&#39;, &#39;mysite.views.home&#39;, name=&#39;home&#39;),</span>
+    <span class="c"># url(r&#39;^mysite/&#39;, include(&#39;mysite.foo.urls&#39;)),</span>
+
+    <span class="c"># Uncomment the admin/doc line below to enable admin documentation:</span>
+    <span class="c"># url(r&#39;^admin/doc/&#39;, include(&#39;django.contrib.admindocs.urls&#39;)),</span>
+
+    <span class="c"># Uncomment the next line to enable the admin:</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r&#39;^admin/&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">urls</span><span class="p">)),</span>
+<span class="p">)</span>
+</pre></div>
+</td></tr></table><p>Create a file called <code>admin.py</code> in the directory containing the blog app.</p>
+<p>First, we need to import the admin module and the models which we wish to add to the admin interface.</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre><span class="c"># admin.py</span>
+
+<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<span class="kn">from</span> <span class="nn">mysite.blog.models</span> <span class="kn">import</span> <span class="n">Post</span><span class="p">,</span> <span class="n">Tag</span>
+</pre></div>
+</td></tr></table><p>Next we register our models with the admin site.</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>6
+7</pre></div></td><td class="code"><div class="highlight"><pre><span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Post</span><span class="p">)</span>
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Tag</span><span class="p">)</span>
+</pre></div>
+</td></tr></table><p>At this point if you start the test server and go to <a class="reference external" href="http://127.0.0.1:8000/admin/">http://127.0.0.1:8000/admin/</a> you will see that the Post and Tag models have been added.</p>
+<img alt="Screenshot of admin interface" src="http://www.samfrances.co.uk/posts/2012/Jul/03/creating-blog-django-part-2-admin-interface/images/django-admin1.png" />
+<p>However, if you create a couple of blog post and then try to view the list of posts, this is what you will see:</p>
+<img alt="Screenshot of admin interface" src="http://www.samfrances.co.uk/posts/2012/Jul/03/creating-blog-django-part-2-admin-interface/images/django-admin2.png" />
+<img alt="Screenshot of admin interface" src="http://www.samfrances.co.uk/posts/2012/Jul/03/creating-blog-django-part-2-admin-interface/images/django-admin3.png" />
+<p>In order to rectify this, we need to add a <code>__unicode__</code> method to each of our models.</p>
+<div class="highlight"><pre><span class="c"># models.py</span>
+
+<span class="k">class</span> <span class="nc">Post</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="o">....</span>
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span>
+
+<span class="k">class</span> <span class="nc">Tag</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="o">....</span>
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+</pre></div>
+<p>Finally, we want the admin interface to generate the slug field automatically from the title field. To do this, we add the following lines to the admin.py file.</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>6
+7</pre></div></td><td class="code"><div class="highlight"><pre><span class="k">class</span> <span class="nc">PostAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="n">prepopulated_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;slug&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s">&quot;title&quot;</span><span class="p">,)}</span>
+</pre></div>
+</td></tr></table><p>We then add 'PostAdmin' as the second argument to the call which registers Post with the admin interface.</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>9</pre></div></td><td class="code"><div class="highlight"><pre><span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Post</span><span class="p">,</span> <span class="n">PostAdmin</span><span class="p">)</span>
+</pre></div>
+</td></tr></table><p>Now you will see that the slug field is automatically filled in when you enter a title for your blog post. Here's the complete code for reference:</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10</pre></div></td><td class="code"><div class="highlight"><pre><span class="c"># admin.py</span>
+
+<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<span class="kn">from</span> <span class="nn">mysite.blog.models</span> <span class="kn">import</span> <span class="n">Post</span><span class="p">,</span> <span class="n">Tag</span>
+
+<span class="k">class</span> <span class="nc">PostAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="n">prepopulated_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;slug&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s">&quot;title&quot;</span><span class="p">,)}</span>
+
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Post</span><span class="p">,</span> <span class="n">PostAdmin</span><span class="p">)</span>
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Tag</span><span class="p">)</span>
+</pre></div>
+</td></tr></table><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20</pre></div></td><td class="code"><div class="highlight"><pre><span class="c"># models.py</span>
+
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="k">class</span> <span class="nc">Tag</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+
+<span class="k">class</span> <span class="nc">Post</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+    <span class="n">slug</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">SlugField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span> <span class="n">unique_for_date</span><span class="o">=</span><span class="s">&#39;publication_date&#39;</span><span class="p">)</span>
+    <span class="n">publication_date</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">)</span>
+    <span class="n">body</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">()</span>
+    <span class="n">tags</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Tag</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span>
+</pre></div>
+</td></tr></table><p>That concludes this installment. Next time we'll get to the real meat of the project - using Django's generic class-based views.</p>
+
+<script id="dsq-count-scr" src="//samfrances-co-uk.disqus.com/count.js" async></script>
+<div id="disqus_thread"></div>
+<script>
+
+    /**
+    *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR
+    PLATFORM OR CMS.
+    *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT:
+    https://disqus.com/admin/universalcode/#configuration-variables*/
+    var disqus_config = function () {
+        this.page.url = "http://www.samfrances.co.uk/posts/2012/Jul/03/creating-blog-django-part-2-admin-interface/";  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = "2012-7-3-creating-blog-django-part-2-admin-interface-4065d8f7-22e9-4573-b48b-ad744f79d0c1"; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//samfrances-co-uk.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div><!-- /.entry-content -->
+
+  </article>
+				    
+				</div>
+				
+				<div id="sidebar">
+
+    <h3>Tags</h3>
+
+    <p> 
+<a href="http://www.samfrances.co.uk/tag/node.html">node</a>, <a href="http://www.samfrances.co.uk/tag/pelican.html">pelican</a>, <a href="http://www.samfrances.co.uk/tag/canvas.html">canvas</a>, <a href="http://www.samfrances.co.uk/tag/design-patterns.html">design-patterns</a>, <a href="http://www.samfrances.co.uk/tag/python.html">python</a>, <a href="http://www.samfrances.co.uk/tag/javascript.html">javascript</a>, <a href="http://www.samfrances.co.uk/tag/aws.html">aws</a>, <a href="http://www.samfrances.co.uk/tag/django.html">django</a>, <a href="http://www.samfrances.co.uk/tag/ansible.html">ansible</a>, <a href="http://www.samfrances.co.uk/tag/html5.html">html5</a>, <a href="http://www.samfrances.co.uk/tag/tutorials.html">tutorials</a>    </p>
+    
+    <h3>Feeds</h3>
+    
+    <p>
+        <a href="http://www.samfrances.co.uk/feeds/all.atom.xml" type="application/rss+xml" rel="alternate">
+            <img src="http://www.samfrances.co.uk/theme/images/feed.png" alt="Atom feed" />
+        </a> 
+        <a href="http://www.samfrances.co.uk/feeds/all.atom.xml" type="application/rss+xml" rel="alternate">Atom</a><br />
+    </p>
+    
+    <h3>Social</h3>
+    
+    <ul>
+        <li><a href="http://stackoverflow.com/users/1256529/samfrances">stackoverflow</a></li>
+        <li><a href="http://github.com/samfrances">github</a></li>
+        <li><a href="http://codewars.com/users/samfrances">codewars</a></li>
+    </ul>
+    
+    <h3>Blogroll</h3>
+        <ul>
+            <li><a href="http://getpelican.com/">Pelican</a></li>
+            <li><a href="http://python.org/">Python.org</a></li>
+            <li><a href="http://jinja.pocoo.org/">Jinja2</a></li>
+            <li><a href="http://xoph.co/">Xophmeister's World</a></li>
+        </ul>
+    
+    
+
+		        </div>
+			</div>
+			
+			<div id="footer">
+				<span></span>
+				<span>&copy; Sam Frances 2016. All Rights Reserved.</span>
+                <p>Generated with <a href="http://blog.getpelican.com/">Pelican</a>, powered by <a href="https://www.python.org/">Python.</a></p>
+			</div>
+		</div>
+		
+	</body>
+
+</html>
