@@ -15,4 +15,4 @@ Drag and drop the characters and shapes (if you like):
 
 .. raw:: html
 
-    <iframe src="http://demos.samfrances.co.uk/canvas_dragndrop/demo_inline.html" style="border:none; width:550px; height:550px;"></iframe>
+    <iframe src="https://samfrances.github.io/canvas-dragndrop-demo/" style="border:none; width:550px; height:550px;"></iframe>
