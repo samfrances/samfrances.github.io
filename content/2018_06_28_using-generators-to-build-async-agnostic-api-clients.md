@@ -46,7 +46,90 @@ back into the generator. The generator then processes the response.
 
 Here's a toy API client for [The Internet Chuck Norris Database](http://www.icndb.com/).
 
-<script src="https://gitlab.com/samfrances/async-agnostic-api-client-example/snippets/1729032.js"></script>
+    #!python3.6
+
+    # agnostic_client.py
+
+    from typing import Iterable, NamedTuple, Dict, Any, Optional
+
+    import requests
+    from aiohttp import ClientSession
+
+    URL_TEMPLATE = "https://api.icndb.com/jokes/{id}/"
+
+
+    class Request(NamedTuple):
+        method: str
+        url: str
+        json: Optional[Dict[str, Any]] = None
+
+
+    class Response(NamedTuple):
+        status: int
+        json: Optional[Dict[str, Any]] = None
+
+
+    def get_joke(id: int) -> Iterable[Request]:
+
+        response = yield Request("GET", URL_TEMPLATE.format(id=id))
+
+        try:
+
+            if response.status != 200:
+                raise JokeApiError("API request failed")
+
+            data = response.json
+            if data.get("type") == 'NoSuchQuoteException':
+                raise NoSuchJoke(data.get("value", ""))
+            if data.get("type") != "success":
+                raise JokeApiError("API request failed")
+
+            raise Return(data["value"]["joke"])
+
+        except (JokeApiError, Return, StopIteration):
+            raise
+        except Exception as e:
+            raise JokeApiError() from e
+
+
+    def call_api_sync(it):
+        try:
+            for req in it:
+                response = requests.request(req.method, req.url, json=req.json)
+                it.send(
+                    Response(status=response.status_code, json=response.json())
+                )
+        except Return as e:
+            return e.value
+
+
+    async def call_api_async(it):
+        async with ClientSession() as session:
+            try:
+                for req in it:
+                    async with session.request(
+                            method=req.method,
+                            url=req.url,
+                            json=req.json) as res:
+                        json = await res.json()
+                        response = Response(status=res.status, json=json)
+                        it.send(response)
+            except Return as e:
+                return e.value
+
+    class JokeApiError(Exception):
+        pass
+
+
+    class NoSuchJoke(JokeApiError):
+        pass
+
+
+    class Return(Exception):
+
+        def __init__(self, value):
+            self.value = value
+
 
 I still haven't decided if this is a good strategy overall, although it
 certainly seems to achieve its immediate goal of allowing a large chunk of
