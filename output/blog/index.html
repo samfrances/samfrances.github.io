@@ -43,67 +43,65 @@
 
             <aside id="featured">
                 <article>
-                    <h2 class="blog_post_heading"><a href="https://samfrances.co.uk/posts/2017/Jan/23/more-twitterbot-silliness/">More twitterbot silliness</a></h2>
+                    <h2 class="blog_post_heading"><a href="https://samfrances.co.uk/posts/2018/Jun/28/using-generators-to-build-async-agnostic-api-clients/">Using generators to build async agnostic API clients</a></h2>
 <footer class="blog_post_dateline">
-        <span>Mon 23 January 2017</span>
-<span>| tags: <a href="https://samfrances.co.uk/tag/javascript.html">javascript</a>, <a href="https://samfrances.co.uk/tag/node.html">node</a>, <a href="https://samfrances.co.uk/tag/aws.html">aws</a>, <a href="https://samfrances.co.uk/tag/ansible.html">ansible</a></span>
-</footer><!-- /.post-info --><p>Not content to rest on my laurels after the roaring success that was <a href="https://twitter.com/fight_guybrush">@fight_guybrush</a>, I have written another twitter bot, <a href="https://twitter.com/grauniad_news">@grauniad_news</a>, an exact replica of the twitter feed for The Guardian newspaper, but with added spelling mistakes.</p>
-<p>(For any non-British readers, The Guardian is a UK newspaper with a reputation for spelling mistakes, among other things, giving rise to the nickname "The Grauniad".)</p>
-<p>This bot is a slightly more sophisticated project than the last one, which was just a python script triggered hourly by cron. The new bot is written in node.js, uses Twitter's streaming API to monitor and respond to tweets in real time, and is hosted on an Amazon Web Services t2.nano instance, launched using Ansible. I use the <a href="https://github.com/ttezel/twit">Twit</a> library to communicate with Twitter's API, and <a href="https://github.com/foreverjs/forever">forever</a> to ensure that the bot keeps running continuously.</p>
-<p>The method of generating badly spelled tweets is quite simple, but even so, it taught me some important lessons. The most important lesson: watch out for infinite loops in node. Early on, I found that the twitterbot would freeze after a seemingly random interval during which it worked normally. No errors were logged, and <code>forever list</code> showed the program as still running.</p>
-<p>The problem turned out to be in my simple function for introducing misspellings.</p>
-<div class="highlight"><pre><span class="kd">function</span> <span class="nx">misspellRandomWords</span><span class="p">(</span><span class="nx">sentence</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kd">let</span> <span class="nx">words</span> <span class="o">=</span> <span class="nx">sentence</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">);</span>
-    <span class="kr">const</span> <span class="nx">limit</span> <span class="o">=</span> <span class="nx">words</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+        <span>Thu 28 June 2018</span>
+<span>| tags: <a href="https://samfrances.co.uk/tag/python.html">python</a>, <a href="https://samfrances.co.uk/tag/asyncio.html">asyncio</a>, <a href="https://samfrances.co.uk/tag/async.html">async</a></span>
+</footer><!-- /.post-info --><p>I'm a big fan of asyncio, couroutines and <code>async</code>/<code>await</code> syntax in
+Python 3.5+. However, they come with some well documented downsides. Not least
+among these is the
+<a href="http://journal.stuffwithstuff.com/2015/02/01/what-color-is-your-function/">red/blue function problem</a>.
+Coroutines can call plain functions, but only a coroutine can await another
+coroutine (unless you count running it by directly invoking the event loop).
+Meanwhile, if a coroutine calls a plain function which triggers some sort of
+blocking IO, the whole event loop is blocked.</p>
+<p>I have found the red/blue divide particularly annoying in the context of web
+API clients. Take <a href="https://boto3.readthedocs.io/">boto3</a>, the popular client for
+AWS's various APIs. This only works in a synchronous context. Another project,
+<a href="https://github.com/aio-libs/aiobotocore">aiobotocore</a>, provides some of these
+capabilities in an async context, but doesn't support all services and operations.</p>
+<p>Yet, many of the things API clients do have nothing directly to do with IO,
+async or otherwise. Preparing a HTTP request - determining what headers to
+use, constructing a request body, calculating signatures and other
+authentication details - is a purely functional, IO-free business.
+The same goes for interpreting a HTTP response.</p>
+<p>A function or method in an API client is like a sandwich where constructing
+the request and interpreting the response are the two pieces of bread, and sending
+the request is the filling. We ought to be able to use the same bread for any
+type of sandwich, without caring if the filling is ham, cheese, or something else.</p>
+<p>Ok, enough with the shaky metaphors. Time for some code.</p>
+<p>The strategy I have stumbled upon is to write the pure
+request-construction / response-interpretation logic as a generator function,
+which yields in the middle. The generator yields an object providing details of
+the HTTP request it wishes to be sent, ceding control to "something else, I care not
+what" which executes the actual web request, and sends an object representing the response
+back into the generator. The generator then processes the response.</p>
+<p>Here's a toy API client for <a href="http://www.icndb.com/">The Internet Chuck Norris Database</a>.</p>
+<script src="https://gitlab.com/samfrances/async-agnostic-api-client-example/snippets/1729032.js"></script>
 
-    <span class="c1">// Choose a first word, filtering out urls</span>
-    <span class="kd">var</span> <span class="nx">iFirstWord</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="nx">limit</span><span class="p">);</span>
-    <span class="k">while</span> <span class="p">(</span><span class="nx">isLink</span><span class="p">(</span><span class="nx">words</span><span class="p">[</span><span class="nx">iFirstWord</span><span class="p">])</span> <span class="o">||</span> <span class="nx">words</span><span class="p">[</span><span class="nx">iFirstWord</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="s2">&quot;@&quot;</span> <span class="p">)</span> <span class="p">{</span>
-        <span class="nx">iFirstWord</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="nx">limit</span><span class="p">);</span>
-    <span class="p">}</span>
-
-    <span class="c1">// Choose second misspelled word, and make sure it isn&#39;t the first or an URL</span>
-    <span class="kd">var</span> <span class="nx">iSecondWord</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="nx">limit</span><span class="p">);</span>
-    <span class="k">while</span> <span class="p">(</span><span class="nx">isLink</span><span class="p">(</span><span class="nx">words</span><span class="p">[</span><span class="nx">iSecondWord</span><span class="p">])</span> <span class="o">||</span>
-            <span class="nx">iSecondWord</span> <span class="o">===</span> <span class="nx">iFirstWord</span> <span class="o">||</span>
-            <span class="nx">words</span><span class="p">[</span><span class="nx">iSecondWord</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="s2">&quot;@&quot;</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nx">iSecondWord</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="nx">limit</span><span class="p">);</span>
-    <span class="p">}</span>
-
-    <span class="nx">words</span><span class="p">[</span><span class="nx">iFirstWord</span><span class="p">]</span> <span class="o">=</span> <span class="nx">swapRandomLetters</span><span class="p">(</span><span class="nx">words</span><span class="p">[</span><span class="nx">iFirstWord</span><span class="p">]);</span>
-    <span class="nx">words</span><span class="p">[</span><span class="nx">iSecondWord</span><span class="p">]</span> <span class="o">=</span> <span class="nx">swapRandomLetters</span><span class="p">(</span><span class="nx">words</span><span class="p">[</span><span class="nx">iSecondWord</span><span class="p">]);</span>
-
-    <span class="k">return</span> <span class="nx">words</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">);</span>
-<span class="p">}</span>
-</pre></div>
-
-
-<p>This worked most of the time, but would get into an infinite loop in certain circumstances - for example, if every word in the tweet starts with "@".</p>
-<p>I don't know if this is how a node.js expert would do it, but after resolving this bug, I started guarding my loops to catch any unforeseen conditions that would cause them to loop infinitely, and make sure that these were logged as errors.</p>
-<div class="highlight"><pre><span class="kd">function</span> <span class="nx">misspellRandomWords</span><span class="p">(</span><span class="nx">sentence</span><span class="p">)</span> <span class="p">{</span>
-<span class="c1">// ...</span>
-<span class="c1">// ...</span>
-    <span class="kd">let</span> <span class="nx">nLoops</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// Infinite loop error detection</span>
-    <span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="nx">isSwappable</span><span class="p">(</span><span class="nx">words</span><span class="p">[</span><span class="nx">iFirstWord</span><span class="p">]))</span> <span class="p">{</span>
-        <span class="nx">iFirstWord</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="nx">limit</span><span class="p">);</span>
-
-        <span class="c1">// Infinite loop detection</span>
-        <span class="k">if</span> <span class="p">(</span><span class="o">++</span><span class="nx">nLoops</span> <span class="o">&gt;</span> <span class="mi">1000</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">&quot;Infinite loop detected on sentence: &quot;</span> <span class="o">+</span> <span class="nx">sentence</span><span class="p">);</span>
-        <span class="p">}</span>
-
-    <span class="p">}</span>
-<span class="c1">// ...</span>
-<span class="c1">// ...</span>
-<span class="p">}</span>
-</pre></div>
-
-
-<p>If you're interested, you can take a look at the code <a href="https://github.com/samfrances/grauniad-node">on Github</a>, or have a look at the bot <a href="https://twitter.com/grauniad_news">on Twitter</a>. Be warned, the bot is not sophisticated enough to know when a randomly misspelled headline might cause offence.</p>                </article>
+<p>I still haven't decided if this is a good strategy overall, although it
+certainly seems to achieve its immediate goal of allowing a large chunk of
+code to be shared between sync and async clients. Comments welcome.</p>
+<p>¡Hasta pronto!</p>                </article>
             </aside><!-- /#featured -->
                 <section id="other_articles">
                     <h2>Other articles</h2>
                     <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h2 class="blog_post_heading"><a href="https://samfrances.co.uk/posts/2017/Jan/23/more-twitterbot-silliness/" rel="bookmark"
+                           title="Permalink to More twitterbot silliness">More twitterbot silliness</a></h2>
+                </header>
+
+                <div class="entry-content">
+<footer class="blog_post_dateline">
+        <span>Mon 23 January 2017</span>
+<span>| tags: <a href="https://samfrances.co.uk/tag/javascript.html">javascript</a>, <a href="https://samfrances.co.uk/tag/node.html">node</a>, <a href="https://samfrances.co.uk/tag/aws.html">aws</a>, <a href="https://samfrances.co.uk/tag/ansible.html">ansible</a></span>
+</footer><!-- /.post-info -->                <p>Not content to rest on my laurels after the roaring success that was <a href="https://twitter.com/fight_guybrush">@fight_guybrush</a>, I have written another twitter bot.</p>
+                <p><a class="readmore" href="https://samfrances.co.uk/posts/2017/Jan/23/more-twitterbot-silliness/">read more</a></p>
+                </div><!-- /.entry-content -->
+            </article></li>
 
             <li><article class="hentry">
                 <header>
@@ -150,22 +148,6 @@
                 <p><a class="readmore" href="https://samfrances.co.uk/posts/2014/Jan/29/mvc-todo-list-demo/">read more</a></p>
                 </div><!-- /.entry-content -->
             </article></li>
-
-            <li><article class="hentry">
-                <header>
-                    <h2 class="blog_post_heading"><a href="https://samfrances.co.uk/posts/2012/Oct/08/canvas-drag-and-drop-example/" rel="bookmark"
-                           title="Permalink to A canvas drag and drop example">A canvas drag and drop example</a></h2>
-                </header>
-
-                <div class="entry-content">
-<footer class="blog_post_dateline">
-        <span>Mon 08 October 2012</span>
-<span>| tags: <a href="https://samfrances.co.uk/tag/javascript.html">javascript</a>, <a href="https://samfrances.co.uk/tag/html5.html">html5</a>, <a href="https://samfrances.co.uk/tag/canvas.html">canvas</a>, <a href="https://samfrances.co.uk/tag/tutorials.html">tutorials</a></span>
-</footer><!-- /.post-info -->                <p class="first last">I've recently unearthed an old piece of code which uses multiple layered HTML5 canvas elements to create a multi-layered drag and drop effect. The code is probably due some refinements, but I thought I'd post a link just for fun.</p>
-
-                <p><a class="readmore" href="https://samfrances.co.uk/posts/2012/Oct/08/canvas-drag-and-drop-example/">read more</a></p>
-                </div><!-- /.entry-content -->
-            </article></li>
             </ol><!-- /#posts-list -->
 <p class="paginator">
     Page 1 / 2
@@ -180,7 +162,7 @@
     <h3>Tags</h3>
 
     <p> 
-<a href="https://samfrances.co.uk/tag/node.html">node</a>, <a href="https://samfrances.co.uk/tag/pelican.html">pelican</a>, <a href="https://samfrances.co.uk/tag/canvas.html">canvas</a>, <a href="https://samfrances.co.uk/tag/design-patterns.html">design-patterns</a>, <a href="https://samfrances.co.uk/tag/python.html">python</a>, <a href="https://samfrances.co.uk/tag/javascript.html">javascript</a>, <a href="https://samfrances.co.uk/tag/aws.html">aws</a>, <a href="https://samfrances.co.uk/tag/django.html">django</a>, <a href="https://samfrances.co.uk/tag/ansible.html">ansible</a>, <a href="https://samfrances.co.uk/tag/html5.html">html5</a>, <a href="https://samfrances.co.uk/tag/tutorials.html">tutorials</a>    </p>
+<a href="https://samfrances.co.uk/tag/node.html">node</a>, <a href="https://samfrances.co.uk/tag/pelican.html">pelican</a>, <a href="https://samfrances.co.uk/tag/canvas.html">canvas</a>, <a href="https://samfrances.co.uk/tag/design-patterns.html">design-patterns</a>, <a href="https://samfrances.co.uk/tag/python.html">python</a>, <a href="https://samfrances.co.uk/tag/javascript.html">javascript</a>, <a href="https://samfrances.co.uk/tag/aws.html">aws</a>, <a href="https://samfrances.co.uk/tag/django.html">django</a>, <a href="https://samfrances.co.uk/tag/ansible.html">ansible</a>, <a href="https://samfrances.co.uk/tag/html5.html">html5</a>, <a href="https://samfrances.co.uk/tag/tutorials.html">tutorials</a>, <a href="https://samfrances.co.uk/tag/async.html">async</a>, <a href="https://samfrances.co.uk/tag/asyncio.html">asyncio</a>    </p>
     
     <h3>Feeds</h3>
     

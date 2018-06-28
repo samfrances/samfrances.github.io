@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
         <meta charset="utf-8" />
-        <title>pelican | Sam Frances' Blog</title>
+        <title>async | Sam Frances' Blog</title>
         <link rel="stylesheet" href="https://samfrances.co.uk/theme/css/styles.css" />
 <link rel="stylesheet" type="text/css" href="https://samfrances.co.uk/theme/css/blog.css" />
         <link href="https://samfrances.co.uk/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Sam Frances' Blog Atom Feed" />
@@ -43,12 +43,45 @@
 
             <aside id="featured">
                 <article>
-                    <h2 class="blog_post_heading"><a href="https://samfrances.co.uk/posts/2015/Aug/06/relaunching-with-pelican/">Relaunching with Pelican</a></h2>
+                    <h2 class="blog_post_heading"><a href="https://samfrances.co.uk/posts/2018/Jun/28/using-generators-to-build-async-agnostic-api-clients/">Using generators to build async agnostic API clients</a></h2>
 <footer class="blog_post_dateline">
-        <span>Thu 06 August 2015</span>
-<span>| tags: <a href="https://samfrances.co.uk/tag/python.html">python</a>, <a href="https://samfrances.co.uk/tag/pelican.html">pelican</a></span>
-</footer><!-- /.post-info --><p>After realising that my django-powered site was running on a dangerously old version of django, I've decided to relaunch the site using <a href="http://docs.getpelican.com/en/3.6.2/index.html">pelican</a>, a python static site generation framework. I reason that if it's good enough for django legend <a href="http://www.pydanny.com/my-new-blog.html">Daniel Roy Greenfeld</a> it's good enough for me.</p>
-<p>Most of the old posts aren't up yet, and I'm currently using a prepackaged theme, but I'm going to be working on adding the old content and writing my own pelican theme so that the site ends up looking like the old one. I'll also be adding disqus comments in the fullness of time, or working out a way of hosting my own comments.</p>
+        <span>Thu 28 June 2018</span>
+<span>| tags: <a href="https://samfrances.co.uk/tag/python.html">python</a>, <a href="https://samfrances.co.uk/tag/asyncio.html">asyncio</a>, <a href="https://samfrances.co.uk/tag/async.html">async</a></span>
+</footer><!-- /.post-info --><p>I'm a big fan of asyncio, couroutines and <code>async</code>/<code>await</code> syntax in
+Python 3.5+. However, they come with some well documented downsides. Not least
+among these is the
+<a href="http://journal.stuffwithstuff.com/2015/02/01/what-color-is-your-function/">red/blue function problem</a>.
+Coroutines can call plain functions, but only a coroutine can await another
+coroutine (unless you count running it by directly invoking the event loop).
+Meanwhile, if a coroutine calls a plain function which triggers some sort of
+blocking IO, the whole event loop is blocked.</p>
+<p>I have found the red/blue divide particularly annoying in the context of web
+API clients. Take <a href="https://boto3.readthedocs.io/">boto3</a>, the popular client for
+AWS's various APIs. This only works in a synchronous context. Another project,
+<a href="https://github.com/aio-libs/aiobotocore">aiobotocore</a>, provides some of these
+capabilities in an async context, but doesn't support all services and operations.</p>
+<p>Yet, many of the things API clients do have nothing directly to do with IO,
+async or otherwise. Preparing a HTTP request - determining what headers to
+use, constructing a request body, calculating signatures and other
+authentication details - is a purely functional, IO-free business.
+The same goes for interpreting a HTTP response.</p>
+<p>A function or method in an API client is like a sandwich where constructing
+the request and interpreting the response are the two pieces of bread, and sending
+the request is the filling. We ought to be able to use the same bread for any
+type of sandwich, without caring if the filling is ham, cheese, or something else.</p>
+<p>Ok, enough with the shaky metaphors. Time for some code.</p>
+<p>The strategy I have stumbled upon is to write the pure
+request-construction / response-interpretation logic as a generator function,
+which yields in the middle. The generator yields an object providing details of
+the HTTP request it wishes to be sent, ceding control to "something else, I care not
+what" which executes the actual web request, and sends an object representing the response
+back into the generator. The generator then processes the response.</p>
+<p>Here's a toy API client for <a href="http://www.icndb.com/">The Internet Chuck Norris Database</a>.</p>
+<script src="https://gitlab.com/samfrances/async-agnostic-api-client-example/snippets/1729032.js"></script>
+
+<p>I still haven't decided if this is a good strategy overall, although it
+certainly seems to achieve its immediate goal of allowing a large chunk of
+code to be shared between sync and async clients. Comments welcome.</p>
 <p>¡Hasta pronto!</p>                </article>
 <p class="paginator">
     Page 1 / 1
