@@ -19,7 +19,8 @@ blocking IO, the whole event loop is blocked.
 
 I have found the red/blue divide particularly annoying in the context of web
 API clients. Take [boto3](https://boto3.readthedocs.io/), the popular client for
-AWS's various APIs. This only works in a synchronous context. Another project,
+AWS's various APIs. This only works in a synchronous context (unless you don't
+mind blocking the event loop for the duration of each request). Another project,
 [aiobotocore](https://github.com/aio-libs/aiobotocore), provides some of these
 capabilities in an async context, but doesn't support all services and operations.
 
