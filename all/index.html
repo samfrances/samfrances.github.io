@@ -43,49 +43,65 @@
 
             <aside id="featured">
                 <article>
-                    <h2 class="blog_post_heading"><a href="https://samfrances.co.uk/posts/2018/May/28/now-9/">What I'm doing now</a></h2>
+                    <h2 class="blog_post_heading"><a href="https://samfrances.co.uk/posts/2018/Jun/28/using-generators-to-build-async-agnostic-api-clients/">Using generators to build async agnostic API clients</a></h2>
 <footer class="blog_post_dateline">
-        <span>Mon 28 May 2018</span>
+        <span>Thu 28 June 2018</span>
+<span>| tags: <a href="https://samfrances.co.uk/tag/python.html">python</a>, <a href="https://samfrances.co.uk/tag/asyncio.html">asyncio</a>, <a href="https://samfrances.co.uk/tag/async.html">async</a></span>
+</footer><!-- /.post-info --><p>I'm a big fan of asyncio, couroutines and <code>async</code>/<code>await</code> syntax in
+Python 3.5+. However, they come with some well documented downsides. Not least
+among these is the
+<a href="http://journal.stuffwithstuff.com/2015/02/01/what-color-is-your-function/">red/blue function problem</a>.
+Coroutines can call plain functions, but only a coroutine can await another
+coroutine (unless you count running it by directly invoking the event loop).
+Meanwhile, if a coroutine calls a plain function which triggers some sort of
+blocking IO, the whole event loop is blocked.</p>
+<p>I have found the red/blue divide particularly annoying in the context of web
+API clients. Take <a href="https://boto3.readthedocs.io/">boto3</a>, the popular client for
+AWS's various APIs. This only works in a synchronous context. Another project,
+<a href="https://github.com/aio-libs/aiobotocore">aiobotocore</a>, provides some of these
+capabilities in an async context, but doesn't support all services and operations.</p>
+<p>Yet, many of the things API clients do have nothing directly to do with IO,
+async or otherwise. Preparing a HTTP request - determining what headers to
+use, constructing a request body, calculating signatures and other
+authentication details - is a purely functional, IO-free business.
+The same goes for interpreting a HTTP response.</p>
+<p>A function or method in an API client is like a sandwich where constructing
+the request and interpreting the response are the two pieces of bread, and sending
+the request is the filling. We ought to be able to use the same bread for any
+type of sandwich, without caring if the filling is ham, cheese, or something else.</p>
+<p>Ok, enough with the shaky metaphors. Time for some code.</p>
+<p>The strategy I have stumbled upon is to write the pure
+request-construction / response-interpretation logic as a generator function,
+which yields in the middle. The generator yields an object providing details of
+the HTTP request it wishes to be sent, ceding control to "something else, I care not
+what" which executes the actual web request, and sends an object representing the response
+back into the generator. The generator then processes the response.</p>
+<p>Here's a toy API client for <a href="http://www.icndb.com/">The Internet Chuck Norris Database</a>.</p>
+<script src="https://gitlab.com/samfrances/async-agnostic-api-client-example/snippets/1729032.js"></script>
 
-</footer><!-- /.post-info --><p><em>(This is my <a href="http://nownownow.com/about">now page</a>. It tells you what I'm doing at the moment. It also reminds <strong>me</strong> what I have decided I want to be doing at the moment.)</em></p>
-<p>Reading:</p>
-<ul>
-<li><del><a href="https://pragprog.com/book/cdc-elixir/learn-functional-programming-with-elixir">Learn Functional Programming with Elixir</a>
-  by Ulisses Almeida</del> (finished)</li>
-<li>&#43; <a href="http://shop.oreilly.com/product/0636920030584.do">Introducing Elixir</a> by Simon St. Laurent and J. Eisenberg</li>
-<li>&#43; <a href="http://www.obeythetestinggoat.com/">Test-Driven Development with Python, 2nd Edition</a> by Harry J.W. Percival</li>
-<li><del><a href="http://shop.oreilly.com/product/0636920032502.do">Lightweight Django</a> by Julia Elman and Mark Lavin</del> (finished)</li>
-</ul>
-<p>Looking forward to reading:</p>
-<ul>
-<li><a href="https://www.manning.com/books/amazon-web-services-in-action">Amazon Web Services in Action</a> by Michael Wittig &amp;
-  Andreas Wittig</li>
-<li><a href="https://leanpub.com/javascriptallongesix">JavaScript Allongé, the "Six" Edition</a></li>
-<li><a href="https://bleedingedgepress.com/developing-a-redux-edge/">Developing a Redux Edge</a> by Johannes Lumpe, Karl Purkhardt,
-  Art Muller, Darío Cravero &amp; Ezekiel Chentnik</li>
-<li><a href="https://www.manning.com/books/docker-in-action">Docker in Action</a> by Jeff Nickoloff</li>
-<li><a href="https://www.manning.com/books/rabbitmq-in-depth">RabbitMQ in Depth</a> by Gavin M. Roy</li>
-<li><a href="https://www.nostarch.com/howlinuxworks2">How Linux Works</a> by Brian Ward</li>
-<li><a href="http://www.apress.com/la/book/9781430258544">Foundations of Python Network Programming</a> by Brandon Rhodes</li>
-<li><a href="http://zguide.zeromq.org/page:all">ZeroMQ</a> by Pieter Hintjens</li>
-<li><a href="https://www.ansiblefordevops.com/">Ansible for DevOps</a> by Jeff Geerling</li>
-<li><a href="http://haskellbook.com/">Haskell programming from first principles</a> by Christopher Allen and Julie Moronuki</li>
-<li><a href="https://www.amazon.co.uk/Foundation-Mathematics-K-Stroud/dp/0230579078/">Foundation Mathematics</a> by K.A. Stroud</li>
-<li><a href="http://www.headfirstlabs.com/books/hfalg/">Head First Algebra</a> by Tracy Pilone &amp; Dan Pilone</li>
-<li><a href="http://www.librarything.com/catalog.php?view=samfrances&amp;collection=-1&amp;shelf=list&amp;sort=dateread">So many books!!!</a></li>
-</ul>
-<p>Studying:</p>
-<ul>
-<li><a href="https://www.edx.org/micromasters/software-development">UBCx: Software Development MicroMasters</a> on <a href="https://www.edx.org">Edx</a></li>
-</ul>
-<p>Working on:</p>
-<ul>
-<li>Lots of interesting stuff for <a href="https://cydarmedical.com/">Cydar</a>, involving things like Django Rest Framework, Celery, Ansible, and AWS</li>
-</ul>                </article>
+<p>I still haven't decided if this is a good strategy overall, although it
+certainly seems to achieve its immediate goal of allowing a large chunk of
+code to be shared between sync and async clients. Comments welcome.</p>
+<p>¡Hasta pronto!</p>                </article>
             </aside><!-- /#featured -->
                 <section id="other_articles">
                     <h2>Other articles</h2>
                     <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h2 class="blog_post_heading"><a href="https://samfrances.co.uk/posts/2018/May/28/now-9/" rel="bookmark"
+                           title="Permalink to What I'm doing now">What I'm doing now</a></h2>
+                </header>
+
+                <div class="entry-content">
+<footer class="blog_post_dateline">
+        <span>Mon 28 May 2018</span>
+
+</footer><!-- /.post-info -->                <p>What I'm doing now</p>
+                <p><a class="readmore" href="https://samfrances.co.uk/posts/2018/May/28/now-9/">read more</a></p>
+                </div><!-- /.entry-content -->
+            </article></li>
 
             <li><article class="hentry">
                 <header>
@@ -131,21 +147,6 @@
                 <p><a class="readmore" href="https://samfrances.co.uk/posts/2017/Nov/19/now-6/">read more</a></p>
                 </div><!-- /.entry-content -->
             </article></li>
-
-            <li><article class="hentry">
-                <header>
-                    <h2 class="blog_post_heading"><a href="https://samfrances.co.uk/posts/2017/Apr/24/now-5/" rel="bookmark"
-                           title="Permalink to What I'm doing now">What I'm doing now</a></h2>
-                </header>
-
-                <div class="entry-content">
-<footer class="blog_post_dateline">
-        <span>Mon 24 April 2017</span>
-
-</footer><!-- /.post-info -->                <p>What I'm doing now</p>
-                <p><a class="readmore" href="https://samfrances.co.uk/posts/2017/Apr/24/now-5/">read more</a></p>
-                </div><!-- /.entry-content -->
-            </article></li>
             </ol><!-- /#posts-list -->
 <p class="paginator">
     Page 1 / 4
@@ -160,7 +161,7 @@
     <h3>Tags</h3>
 
     <p> 
-<a href="https://samfrances.co.uk/tag/node.html">node</a>, <a href="https://samfrances.co.uk/tag/pelican.html">pelican</a>, <a href="https://samfrances.co.uk/tag/canvas.html">canvas</a>, <a href="https://samfrances.co.uk/tag/design-patterns.html">design-patterns</a>, <a href="https://samfrances.co.uk/tag/python.html">python</a>, <a href="https://samfrances.co.uk/tag/javascript.html">javascript</a>, <a href="https://samfrances.co.uk/tag/aws.html">aws</a>, <a href="https://samfrances.co.uk/tag/django.html">django</a>, <a href="https://samfrances.co.uk/tag/ansible.html">ansible</a>, <a href="https://samfrances.co.uk/tag/html5.html">html5</a>, <a href="https://samfrances.co.uk/tag/tutorials.html">tutorials</a>    </p>
+<a href="https://samfrances.co.uk/tag/node.html">node</a>, <a href="https://samfrances.co.uk/tag/pelican.html">pelican</a>, <a href="https://samfrances.co.uk/tag/canvas.html">canvas</a>, <a href="https://samfrances.co.uk/tag/design-patterns.html">design-patterns</a>, <a href="https://samfrances.co.uk/tag/python.html">python</a>, <a href="https://samfrances.co.uk/tag/javascript.html">javascript</a>, <a href="https://samfrances.co.uk/tag/aws.html">aws</a>, <a href="https://samfrances.co.uk/tag/django.html">django</a>, <a href="https://samfrances.co.uk/tag/ansible.html">ansible</a>, <a href="https://samfrances.co.uk/tag/html5.html">html5</a>, <a href="https://samfrances.co.uk/tag/tutorials.html">tutorials</a>, <a href="https://samfrances.co.uk/tag/async.html">async</a>, <a href="https://samfrances.co.uk/tag/asyncio.html">asyncio</a>    </p>
     
     <h3>Feeds</h3>
     
