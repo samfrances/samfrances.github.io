@@ -6,6 +6,6 @@ Category: Blog
 Tags: twitterbot, twitter
 Slug: retiring-grauniad-news-twitterbot
 Authors:
-Summary: I'm retiring the "Grauniad News" twitterbot
+Summary: I'm retiring the ["Grauniad News"](https://twitter.com/grauniad_news) twitterbot
 
 After more than four years, I'm retiring the "Grauniad News" twitterbot. I'll be honest, I sort of forgot it was running! If you want to see misspelled Guardian headlines, you'll have to go to [@guardian](https://twitter.com/guardian).
