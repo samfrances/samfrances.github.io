@@ -3,7 +3,7 @@ Date: 2015-8-8 1:07
 UniqueId: 2015-8-8-a-monkey-island-inspired-twitterbot-6622004d-0c50-4b0f-95c8-77e75bccf552
 Modified: 2015-8-8 1:07
 Category: Blog
-Tags: python
+Tags: python, twitterbot, twitter
 Slug: a-monkey-island-inspired-twitterbot
 Authors:
 Summary: Just for fun, I've made a rather silly twitterbot inspired by Monkey Island's 'insult sword-fighting'.

@@ -3,7 +3,7 @@ Date: 2017-1-23 23:41
 UniqueId: 2017-1-23-more-twitterbot-silliness-020793ff-5c2f-4b36-87be-71e84efb256d
 Modified: 2017-1-23 23:41
 Category: Blog
-Tags: javascript, node, aws, ansible
+Tags: javascript, node, aws, ansible, twitterbot, twitter
 Slug: more-twitterbot-silliness
 Authors:
 Summary: Not content to rest on my laurels after the roaring success that was [@fight_guybrush](https://twitter.com/fight_guybrush), I have written another twitter bot.
