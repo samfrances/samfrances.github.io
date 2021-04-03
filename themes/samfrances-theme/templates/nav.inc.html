@@ -13,7 +13,7 @@
                 {% if not PAGES_SORT_ATTRIBUTE -%}
                     {% set PAGES_SORT_ATTRIBUTE = 'title' %}
                 {% endif %}
-                {% for pg in PAGES | sort(attribute=PAGES_SORT_ATTRIBUTE) %}
+                {% for pg in pages | sort(attribute=PAGES_SORT_ATTRIBUTE) %}
                     {% if 'http://' in pg.url -%}
                         <li><a href="{{ pg.url }}">{{ pg.title }}</a></li>
                     {% else %}
