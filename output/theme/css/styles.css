@@ -69,6 +69,10 @@ code {
     padding:3px;
 }
 
+pre code {
+	background-color: unset;
+}
+
 #wrapper {			/* div to hold other elements and center them */
 	background-color:none;
 	padding:0px;
