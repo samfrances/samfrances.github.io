@@ -2,7 +2,7 @@ MVC todo list demo
 ##################
 
 :date: 2014-01-29
-:modified:
+:modified: 2014-01-29
 :category: Blog
 :tags: javascript, html5, tutorials, design-patterns
 :slug: mvc-todo-list-demo

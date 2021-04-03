@@ -2,7 +2,6 @@ Creating a blog with django, part 2: admin interface
 ####################################################
 
 :date: 2012-7-3 23:43
-:modified:
 :category: Blog
 :tags: python, django, tutorials
 :slug: creating-blog-django-part-2-admin-interface

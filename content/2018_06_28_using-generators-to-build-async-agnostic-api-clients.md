@@ -1,7 +1,7 @@
 Title: Using generators to build async agnostic API clients
 Date: 2018-6-28 20:02
 UniqueId: 2018-6-28-using-generators-to-build-async-agnostic-api-clients-55ebbf4a-2f8a-4a70-be38-00cc1b8e025e
-Modified:
+Modified: 2018-6-28 20:02
 Category: Blog
 Tags: python, asyncio, async
 Slug: using-generators-to-build-async-agnostic-api-clients

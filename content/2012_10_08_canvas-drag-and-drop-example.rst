@@ -2,7 +2,7 @@ A canvas drag and drop example
 ##############################
 
 :date: 2012-10-08
-:modified:
+:modified: 2012-10-08
 :category: Blog
 :tags: javascript, html5, canvas, tutorials
 :slug: canvas-drag-and-drop-example

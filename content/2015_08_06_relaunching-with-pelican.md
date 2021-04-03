@@ -1,7 +1,7 @@
 Title: Relaunching with Pelican
 Date: 2015-8-6 21:51
 UniqueId: 2015-8-6-relaunching-with-pelican-4065d8f7-22e9-4573-b48b-ad744f79d0c1
-Modified:
+Modified: 2015-8-6 21:51
 Category: Blog
 Tags: python, pelican
 Slug: relaunching-with-pelican
