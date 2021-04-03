@@ -25,7 +25,7 @@ CLOUDFILES_CONTAINER=my_cloudfiles_container
 
 DROPBOX_DIR=~/Dropbox/Public/
 
-GITHUB_PAGES_BRANCH=gh-pages
+GITHUB_PAGES_BRANCH=master
 
 DEBUG ?= 0
 ifeq ($(DEBUG), 1)
@@ -41,6 +41,7 @@ help:
 	@echo 'Makefile for a pelican Web site                                           '
 	@echo '                                                                          '
 	@echo 'Usage:                                                                    '
+	@echo '   make .venv                           Make the virtualenv                '
 	@echo '   make html                           (re)generate the web site          '
 	@echo '   make clean                          remove the generated files         '
 	@echo '   make regenerate                     regenerate files upon modification '
@@ -61,8 +62,29 @@ help:
 	@echo 'Set the RELATIVE variable to 1 to enable relative urls                    '
 	@echo '                                                                          '
 
+.venv: requirements.txt
+	python3 -m venv .venv
+	.venv/bin/pip install pip-tools
+	.venv/bin/pip-sync requirements.txt
+
+requirements.txt: requirements.in   ## Build requirements .txt file from corresponding .in file
+	@pip-compile \
+	--generate-hashes \
+	--output-file $@ $<
+
+define output_manual_adjustments
+	cp CNAME $(OUTPUTDIR)/
+	cp $(OUTPUTDIR)/blog/index.html $(OUTPUTDIR)/
+endef
+
+define generate_html
+	$(PELICAN) $(INPUTDIR) -o $(OUTPUTDIR) -s $(1) $(PELICANOPTS)
+	cp CNAME $(OUTPUTDIR)/
+	cp $(OUTPUTDIR)/blog/index.html $(OUTPUTDIR)/
+endef
+
 html:
-	$(PELICAN) $(INPUTDIR) -o $(OUTPUTDIR) -s $(CONFFILE) $(PELICANOPTS)
+	$(call generate_html,$(CONFFILE))
 
 clean:
 	[ ! -d $(OUTPUTDIR) ] || rm -rf $(OUTPUTDIR)
@@ -97,7 +119,7 @@ stopserver:
 	@echo 'Stopped Pelican and SimpleHTTPServer processes running in background.'
 
 publish:
-	$(PELICAN) $(INPUTDIR) -o $(OUTPUTDIR) -s $(PUBLISHCONF) $(PELICANOPTS)
+	$(call generate_html,$(PUBLISHCONF))
 
 ssh_upload: publish
 	scp -P $(SSH_PORT) -r $(OUTPUTDIR)/* $(SSH_USER)@$(SSH_HOST):$(SSH_TARGET_DIR)
