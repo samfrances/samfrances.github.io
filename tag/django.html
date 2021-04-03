@@ -58,36 +58,35 @@
 </ul>
 <p>If you aren't familiar with these things, then I suggest you work through the <a href="https://docs.djangoproject.com/en/1.3/">'first steps' tutorial</a> on the <a href="https://www.djangoproject.com">django website</a>.</p>
 <p>Start with an existing django project or create a new one, and make sure the database settings are up and running. We'll call the project directory <code>mysite</code> for convenience. Create a new app called <code>blog</code> and open <code>mysite/blog/models.py</code>. Our models will include a Post class to represent blog posts and a Tag class to represent the different categories a post can be placed in:</p>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14</pre></div></td><td class="code"><div class="highlight"><pre><span class="c"># models.py</span>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="c1"># models.py</span>
 
 <span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 
 <span class="k">class</span> <span class="nc">Tag</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">Post</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="n">title</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
-    <span class="n">slug</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">SlugField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span> <span class="n">unique_for_date</span><span class="o">=</span><span class="s">&#39;publication_date&#39;</span><span class="p">)</span>
+    <span class="n">slug</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">SlugField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span> <span class="n">unique_for_date</span><span class="o">=</span><span class="s1">&#39;publication_date&#39;</span><span class="p">)</span>
     <span class="n">publication_date</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">)</span>
     <span class="n">body</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">()</span>
     <span class="n">tags</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Tag</span><span class="p">)</span>
-</pre></div>
+</code></pre></div>
 </td></tr></table>
-
 <p>Each <code>Tag</code> instance has only one attribute, a <code>name</code>, which is implemented as a <code>CharField</code> with a unique value (<code>unique=True</code>).</p>
 <p>The <code>Post</code> class is somewhat more interesting. It has a <code>title</code> attribute, a main <code>body</code> of text a <code>publication_date</code> that defaults to the time at which the individual post was created.</p>
 <p>The <code>tags</code> attribute implements a many-to-many relationship with <code>Tag</code>; Each blog post can fall under many categories, and each category can include many blog posts.</p>
@@ -127,7 +126,7 @@
     <h3>Tags</h3>
 
     <p> 
-<a href="https://samfrances.co.uk/tag/node.html">node</a>, <a href="https://samfrances.co.uk/tag/pelican.html">pelican</a>, <a href="https://samfrances.co.uk/tag/canvas.html">canvas</a>, <a href="https://samfrances.co.uk/tag/design-patterns.html">design-patterns</a>, <a href="https://samfrances.co.uk/tag/python.html">python</a>, <a href="https://samfrances.co.uk/tag/javascript.html">javascript</a>, <a href="https://samfrances.co.uk/tag/aws.html">aws</a>, <a href="https://samfrances.co.uk/tag/django.html">django</a>, <a href="https://samfrances.co.uk/tag/ansible.html">ansible</a>, <a href="https://samfrances.co.uk/tag/html5.html">html5</a>, <a href="https://samfrances.co.uk/tag/tutorials.html">tutorials</a>, <a href="https://samfrances.co.uk/tag/async.html">async</a>, <a href="https://samfrances.co.uk/tag/asyncio.html">asyncio</a>    </p>
+<a href="https://samfrances.co.uk/tag/python.html">python</a>, <a href="https://samfrances.co.uk/tag/asyncio.html">asyncio</a>, <a href="https://samfrances.co.uk/tag/async.html">async</a>, <a href="https://samfrances.co.uk/tag/javascript.html">javascript</a>, <a href="https://samfrances.co.uk/tag/node.html">node</a>, <a href="https://samfrances.co.uk/tag/aws.html">aws</a>, <a href="https://samfrances.co.uk/tag/ansible.html">ansible</a>, <a href="https://samfrances.co.uk/tag/pelican.html">pelican</a>, <a href="https://samfrances.co.uk/tag/html5.html">html5</a>, <a href="https://samfrances.co.uk/tag/tutorials.html">tutorials</a>, <a href="https://samfrances.co.uk/tag/design-patterns.html">design-patterns</a>, <a href="https://samfrances.co.uk/tag/canvas.html">canvas</a>, <a href="https://samfrances.co.uk/tag/django.html">django</a>    </p>
     
     <h3>Feeds</h3>
     

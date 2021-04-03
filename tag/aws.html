@@ -52,13 +52,13 @@
 <p>This bot is a slightly more sophisticated project than the last one, which was just a python script triggered hourly by cron. The new bot is written in node.js, uses Twitter's streaming API to monitor and respond to tweets in real time, and is hosted on an Amazon Web Services t2.nano instance, launched using Ansible. I use the <a href="https://github.com/ttezel/twit">Twit</a> library to communicate with Twitter's API, and <a href="https://github.com/foreverjs/forever">forever</a> to ensure that the bot keeps running continuously.</p>
 <p>The method of generating badly spelled tweets is quite simple, but even so, it taught me some important lessons. The most important lesson: watch out for infinite loops in node. Early on, I found that the twitterbot would freeze after a seemingly random interval during which it worked normally. No errors were logged, and <code>forever list</code> showed the program as still running.</p>
 <p>The problem turned out to be in my simple function for introducing misspellings.</p>
-<div class="highlight"><pre><span class="kd">function</span> <span class="nx">misspellRandomWords</span><span class="p">(</span><span class="nx">sentence</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre><span></span><code><span class="kd">function</span> <span class="nx">misspellRandomWords</span><span class="p">(</span><span class="nx">sentence</span><span class="p">)</span> <span class="p">{</span>
     <span class="kd">let</span> <span class="nx">words</span> <span class="o">=</span> <span class="nx">sentence</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">);</span>
-    <span class="kr">const</span> <span class="nx">limit</span> <span class="o">=</span> <span class="nx">words</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+    <span class="kd">const</span> <span class="nx">limit</span> <span class="o">=</span> <span class="nx">words</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
 
     <span class="c1">// Choose a first word, filtering out urls</span>
     <span class="kd">var</span> <span class="nx">iFirstWord</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="nx">limit</span><span class="p">);</span>
-    <span class="k">while</span> <span class="p">(</span><span class="nx">isLink</span><span class="p">(</span><span class="nx">words</span><span class="p">[</span><span class="nx">iFirstWord</span><span class="p">])</span> <span class="o">||</span> <span class="nx">words</span><span class="p">[</span><span class="nx">iFirstWord</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="s2">&quot;@&quot;</span> <span class="p">)</span> <span class="p">{</span>
+    <span class="k">while</span> <span class="p">(</span><span class="nx">isLink</span><span class="p">(</span><span class="nx">words</span><span class="p">[</span><span class="nx">iFirstWord</span><span class="p">])</span> <span class="o">||</span> <span class="nx">words</span><span class="p">[</span><span class="nx">iFirstWord</span><span class="p">][</span><span class="mf">0</span><span class="p">]</span> <span class="o">===</span> <span class="s2">&quot;@&quot;</span> <span class="p">)</span> <span class="p">{</span>
         <span class="nx">iFirstWord</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="nx">limit</span><span class="p">);</span>
     <span class="p">}</span>
 
@@ -66,7 +66,7 @@
     <span class="kd">var</span> <span class="nx">iSecondWord</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="nx">limit</span><span class="p">);</span>
     <span class="k">while</span> <span class="p">(</span><span class="nx">isLink</span><span class="p">(</span><span class="nx">words</span><span class="p">[</span><span class="nx">iSecondWord</span><span class="p">])</span> <span class="o">||</span>
             <span class="nx">iSecondWord</span> <span class="o">===</span> <span class="nx">iFirstWord</span> <span class="o">||</span>
-            <span class="nx">words</span><span class="p">[</span><span class="nx">iSecondWord</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="s2">&quot;@&quot;</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">words</span><span class="p">[</span><span class="nx">iSecondWord</span><span class="p">][</span><span class="mf">0</span><span class="p">]</span> <span class="o">===</span> <span class="s2">&quot;@&quot;</span><span class="p">)</span> <span class="p">{</span>
         <span class="nx">iSecondWord</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="nx">limit</span><span class="p">);</span>
     <span class="p">}</span>
 
@@ -75,20 +75,19 @@
 
     <span class="k">return</span> <span class="nx">words</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">);</span>
 <span class="p">}</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>This worked most of the time, but would get into an infinite loop in certain circumstances - for example, if every word in the tweet starts with "@".</p>
 <p>I don't know if this is how a node.js expert would do it, but after resolving this bug, I started guarding my loops to catch any unforeseen conditions that would cause them to loop infinitely, and make sure that these were logged as errors.</p>
-<div class="highlight"><pre><span class="kd">function</span> <span class="nx">misspellRandomWords</span><span class="p">(</span><span class="nx">sentence</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre><span></span><code><span class="kd">function</span> <span class="nx">misspellRandomWords</span><span class="p">(</span><span class="nx">sentence</span><span class="p">)</span> <span class="p">{</span>
 <span class="c1">// ...</span>
 <span class="c1">// ...</span>
-    <span class="kd">let</span> <span class="nx">nLoops</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// Infinite loop error detection</span>
+    <span class="kd">let</span> <span class="nx">nLoops</span> <span class="o">=</span> <span class="mf">0</span><span class="p">;</span> <span class="c1">// Infinite loop error detection</span>
     <span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="nx">isSwappable</span><span class="p">(</span><span class="nx">words</span><span class="p">[</span><span class="nx">iFirstWord</span><span class="p">]))</span> <span class="p">{</span>
         <span class="nx">iFirstWord</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="nx">limit</span><span class="p">);</span>
 
         <span class="c1">// Infinite loop detection</span>
-        <span class="k">if</span> <span class="p">(</span><span class="o">++</span><span class="nx">nLoops</span> <span class="o">&gt;</span> <span class="mi">1000</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">++</span><span class="nx">nLoops</span> <span class="o">&gt;</span> <span class="mf">1000</span><span class="p">)</span> <span class="p">{</span>
             <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">&quot;Infinite loop detected on sentence: &quot;</span> <span class="o">+</span> <span class="nx">sentence</span><span class="p">);</span>
         <span class="p">}</span>
 
@@ -96,8 +95,7 @@
 <span class="c1">// ...</span>
 <span class="c1">// ...</span>
 <span class="p">}</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>If you're interested, you can take a look at the code <a href="https://github.com/samfrances/grauniad-node">on Github</a>, or have a look at the bot <a href="https://twitter.com/grauniad_news">on Twitter</a>. Be warned, the bot is not sophisticated enough to know when a randomly misspelled headline might cause offence.</p>                </article>
 <p class="paginator">
@@ -114,7 +112,7 @@
     <h3>Tags</h3>
 
     <p> 
-<a href="https://samfrances.co.uk/tag/node.html">node</a>, <a href="https://samfrances.co.uk/tag/pelican.html">pelican</a>, <a href="https://samfrances.co.uk/tag/canvas.html">canvas</a>, <a href="https://samfrances.co.uk/tag/design-patterns.html">design-patterns</a>, <a href="https://samfrances.co.uk/tag/python.html">python</a>, <a href="https://samfrances.co.uk/tag/javascript.html">javascript</a>, <a href="https://samfrances.co.uk/tag/aws.html">aws</a>, <a href="https://samfrances.co.uk/tag/django.html">django</a>, <a href="https://samfrances.co.uk/tag/ansible.html">ansible</a>, <a href="https://samfrances.co.uk/tag/html5.html">html5</a>, <a href="https://samfrances.co.uk/tag/tutorials.html">tutorials</a>, <a href="https://samfrances.co.uk/tag/async.html">async</a>, <a href="https://samfrances.co.uk/tag/asyncio.html">asyncio</a>    </p>
+<a href="https://samfrances.co.uk/tag/python.html">python</a>, <a href="https://samfrances.co.uk/tag/asyncio.html">asyncio</a>, <a href="https://samfrances.co.uk/tag/async.html">async</a>, <a href="https://samfrances.co.uk/tag/javascript.html">javascript</a>, <a href="https://samfrances.co.uk/tag/node.html">node</a>, <a href="https://samfrances.co.uk/tag/aws.html">aws</a>, <a href="https://samfrances.co.uk/tag/ansible.html">ansible</a>, <a href="https://samfrances.co.uk/tag/pelican.html">pelican</a>, <a href="https://samfrances.co.uk/tag/html5.html">html5</a>, <a href="https://samfrances.co.uk/tag/tutorials.html">tutorials</a>, <a href="https://samfrances.co.uk/tag/design-patterns.html">design-patterns</a>, <a href="https://samfrances.co.uk/tag/canvas.html">canvas</a>, <a href="https://samfrances.co.uk/tag/django.html">django</a>    </p>
     
     <h3>Feeds</h3>
     
