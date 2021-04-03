@@ -43,212 +43,30 @@
 
             <aside id="featured">
                 <article>
-                    <h2 class="blog_post_heading"><a href="https://samfrances.co.uk/posts/2018/Jun/28/using-generators-to-build-async-agnostic-api-clients/">Using generators to build async agnostic API clients</a></h2>
+                    <h2 class="blog_post_heading"><a href="https://samfrances.co.uk/posts/2021/Apr/03/retiring-grauniad-news-twitterbot/">Retiring the "Grauniad News" twitterbot</a></h2>
 <footer class="blog_post_dateline">
-        <span>Thu 28 June 2018</span>
-<span>| tags: <a href="https://samfrances.co.uk/tag/python.html">python</a>, <a href="https://samfrances.co.uk/tag/asyncio.html">asyncio</a>, <a href="https://samfrances.co.uk/tag/async.html">async</a></span>
-</footer><!-- /.post-info --><p>I'm a big fan of asyncio, couroutines and <code>async</code>/<code>await</code> syntax in
-Python 3.5+. However, they come with some well documented downsides. Not least
-among these is the
-<a href="http://journal.stuffwithstuff.com/2015/02/01/what-color-is-your-function/">red/blue function problem</a>.
-Coroutines can call plain functions, but only a coroutine can await another
-coroutine (unless you count running it by directly invoking the event loop).
-Meanwhile, if a coroutine calls a plain function which triggers some sort of
-blocking IO, the whole event loop is blocked.</p>
-<p>I have found the red/blue divide particularly annoying in the context of web
-API clients. Take <a href="https://boto3.readthedocs.io/">boto3</a>, the popular client for
-AWS's various APIs. This only works in a synchronous context (unless you don't
-mind blocking the event loop for the duration of each request). Another project,
-<a href="https://github.com/aio-libs/aiobotocore">aiobotocore</a>, provides some of these
-capabilities in an async context, but doesn't support all services and operations.</p>
-<p>Yet, many of the things API clients do have nothing directly to do with IO,
-async or otherwise. Preparing a HTTP request - determining what headers to
-use, constructing a request body, calculating signatures and other
-authentication details - is a purely functional, IO-free business.
-The same goes for interpreting a HTTP response.</p>
-<p>A function or method in an API client is like a sandwich where constructing
-the request and interpreting the response are the two pieces of bread, and sending
-the request is the filling. We ought to be able to use the same bread for any
-type of sandwich, without caring if the filling is ham, cheese, or something else.</p>
-<p>Ok, enough with the shaky metaphors. Time for some code.</p>
-<p>The strategy I have stumbled upon is to write the pure
-request-construction / response-interpretation logic as a generator function,
-which yields in the middle. The generator yields an object providing details of
-the HTTP request it wishes to be sent, ceding control to "something else, I care not
-what" which executes the actual web request, and sends an object representing the response
-back into the generator. The generator then processes the response.</p>
-<p>Here's a toy API client for <a href="http://www.icndb.com/">The Internet Chuck Norris Database</a>.</p>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="c1"># agnostic_client.py</span>
-
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">NamedTuple</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
-
-<span class="kn">import</span> <span class="nn">requests</span>
-<span class="kn">from</span> <span class="nn">aiohttp</span> <span class="kn">import</span> <span class="n">ClientSession</span>
-
-<span class="n">URL_TEMPLATE</span> <span class="o">=</span> <span class="s2">&quot;https://api.icndb.com/jokes/</span><span class="si">{id}</span><span class="s2">/&quot;</span>
-
-
-<span class="k">class</span> <span class="nc">Request</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
-    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">url</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">json</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
-
-
-<span class="k">class</span> <span class="nc">Response</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
-    <span class="n">status</span><span class="p">:</span> <span class="nb">int</span>
-    <span class="n">json</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
-
-
-<span class="k">def</span> <span class="nf">get_joke</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Request</span><span class="p">]:</span>
-
-    <span class="n">response</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">Request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">URL_TEMPLATE</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">))</span>
-
-    <span class="k">try</span><span class="p">:</span>
-
-        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">JokeApiError</span><span class="p">(</span><span class="s2">&quot;API request failed&quot;</span><span class="p">)</span>
-
-        <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span>
-        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;NoSuchQuoteException&#39;</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">NoSuchJoke</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;success&quot;</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">JokeApiError</span><span class="p">(</span><span class="s2">&quot;API request failed&quot;</span><span class="p">)</span>
-
-        <span class="k">raise</span> <span class="n">Return</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">][</span><span class="s2">&quot;joke&quot;</span><span class="p">])</span>
-
-    <span class="k">except</span> <span class="p">(</span><span class="n">JokeApiError</span><span class="p">,</span> <span class="n">Return</span><span class="p">,</span> <span class="ne">StopIteration</span><span class="p">):</span>
-        <span class="k">raise</span>
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">JokeApiError</span><span class="p">()</span> <span class="kn">from</span> <span class="nn">e</span>
-
-
-<span class="k">def</span> <span class="nf">call_api_sync</span><span class="p">(</span><span class="n">it</span><span class="p">):</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">req</span> <span class="ow">in</span> <span class="n">it</span><span class="p">:</span>
-            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">req</span><span class="o">.</span><span class="n">method</span><span class="p">,</span> <span class="n">req</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">req</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
-            <span class="n">it</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
-                <span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
-            <span class="p">)</span>
-    <span class="k">except</span> <span class="n">Return</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">e</span><span class="o">.</span><span class="n">value</span>
-
-
-<span class="k">async</span> <span class="k">def</span> <span class="nf">call_api_async</span><span class="p">(</span><span class="n">it</span><span class="p">):</span>
-    <span class="k">async</span> <span class="k">with</span> <span class="n">ClientSession</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">req</span> <span class="ow">in</span> <span class="n">it</span><span class="p">:</span>
-                <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
-                        <span class="n">method</span><span class="o">=</span><span class="n">req</span><span class="o">.</span><span class="n">method</span><span class="p">,</span>
-                        <span class="n">url</span><span class="o">=</span><span class="n">req</span><span class="o">.</span><span class="n">url</span><span class="p">,</span>
-                        <span class="n">json</span><span class="o">=</span><span class="n">req</span><span class="o">.</span><span class="n">json</span><span class="p">)</span> <span class="k">as</span> <span class="n">res</span><span class="p">:</span>
-                    <span class="n">json</span> <span class="o">=</span> <span class="k">await</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-                    <span class="n">response</span> <span class="o">=</span> <span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">json</span><span class="p">)</span>
-                    <span class="n">it</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">Return</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">e</span><span class="o">.</span><span class="n">value</span>
-
-<span class="k">class</span> <span class="nc">JokeApiError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="k">pass</span>
-
-
-<span class="k">class</span> <span class="nc">NoSuchJoke</span><span class="p">(</span><span class="n">JokeApiError</span><span class="p">):</span>
-    <span class="k">pass</span>
-
-
-<span class="k">class</span> <span class="nc">Return</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
-</code></pre></div>
-</td></tr></table>
-<p>I still haven't decided if this is a good strategy overall, although it
-certainly seems to achieve its immediate goal of allowing a large chunk of
-code to be shared between sync and async clients. Comments welcome.</p>
-<p>¡Hasta pronto!</p>                </article>
+        <span>Sat 03 April 2021</span>
+<span>| tags: <a href="https://samfrances.co.uk/tag/twitterbot.html">twitterbot</a>, <a href="https://samfrances.co.uk/tag/twitter.html">twitter</a></span>
+</footer><!-- /.post-info --><p>After more than four years, I'm retiring the "Grauniad News" twitterbot. I'll be honest, I sort of forgot it was running! If you want to see misspelled Guardian headlines, you'll have to go to <a href="https://twitter.com/guardian">@guardian</a>.</p>                </article>
             </aside><!-- /#featured -->
                 <section id="other_articles">
                     <h2>Other articles</h2>
                     <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h2 class="blog_post_heading"><a href="https://samfrances.co.uk/posts/2018/Jun/28/using-generators-to-build-async-agnostic-api-clients/" rel="bookmark"
+                           title="Permalink to Using generators to build async agnostic API clients">Using generators to build async agnostic API clients</a></h2>
+                </header>
+
+                <div class="entry-content">
+<footer class="blog_post_dateline">
+        <span>Thu 28 June 2018</span>
+<span>| tags: <a href="https://samfrances.co.uk/tag/python.html">python</a>, <a href="https://samfrances.co.uk/tag/asyncio.html">asyncio</a>, <a href="https://samfrances.co.uk/tag/async.html">async</a></span>
+</footer><!-- /.post-info -->                <p>A strategy for building API client libraries that work in async and sync contexts</p>
+                <p><a class="readmore" href="https://samfrances.co.uk/posts/2018/Jun/28/using-generators-to-build-async-agnostic-api-clients/">read more</a></p>
+                </div><!-- /.entry-content -->
+            </article></li>
 
             <li><article class="hentry">
                 <header>
@@ -259,7 +77,7 @@ code to be shared between sync and async clients. Comments welcome.</p>
                 <div class="entry-content">
 <footer class="blog_post_dateline">
         <span>Mon 23 January 2017</span>
-<span>| tags: <a href="https://samfrances.co.uk/tag/javascript.html">javascript</a>, <a href="https://samfrances.co.uk/tag/node.html">node</a>, <a href="https://samfrances.co.uk/tag/aws.html">aws</a>, <a href="https://samfrances.co.uk/tag/ansible.html">ansible</a></span>
+<span>| tags: <a href="https://samfrances.co.uk/tag/javascript.html">javascript</a>, <a href="https://samfrances.co.uk/tag/node.html">node</a>, <a href="https://samfrances.co.uk/tag/aws.html">aws</a>, <a href="https://samfrances.co.uk/tag/ansible.html">ansible</a>, <a href="https://samfrances.co.uk/tag/twitterbot.html">twitterbot</a>, <a href="https://samfrances.co.uk/tag/twitter.html">twitter</a></span>
 </footer><!-- /.post-info -->                <p>Not content to rest on my laurels after the roaring success that was <a href="https://twitter.com/fight_guybrush">@fight_guybrush</a>, I have written another twitter bot.</p>
                 <p><a class="readmore" href="https://samfrances.co.uk/posts/2017/Jan/23/more-twitterbot-silliness/">read more</a></p>
                 </div><!-- /.entry-content -->
@@ -274,7 +92,7 @@ code to be shared between sync and async clients. Comments welcome.</p>
                 <div class="entry-content">
 <footer class="blog_post_dateline">
         <span>Sat 08 August 2015</span>
-<span>| tags: <a href="https://samfrances.co.uk/tag/python.html">python</a></span>
+<span>| tags: <a href="https://samfrances.co.uk/tag/python.html">python</a>, <a href="https://samfrances.co.uk/tag/twitterbot.html">twitterbot</a>, <a href="https://samfrances.co.uk/tag/twitter.html">twitter</a></span>
 </footer><!-- /.post-info -->                <p>Just for fun, I've made a rather silly twitterbot inspired by Monkey Island's 'insult sword-fighting'.</p>
                 <p><a class="readmore" href="https://samfrances.co.uk/posts/2015/Aug/08/a-monkey-island-inspired-twitterbot/">read more</a></p>
                 </div><!-- /.entry-content -->
@@ -294,22 +112,6 @@ code to be shared between sync and async clients. Comments welcome.</p>
                 <p><a class="readmore" href="https://samfrances.co.uk/posts/2015/Aug/06/relaunching-with-pelican/">read more</a></p>
                 </div><!-- /.entry-content -->
             </article></li>
-
-            <li><article class="hentry">
-                <header>
-                    <h2 class="blog_post_heading"><a href="https://samfrances.co.uk/posts/2014/Jan/29/mvc-todo-list-demo/" rel="bookmark"
-                           title="Permalink to MVC todo list demo">MVC todo list demo</a></h2>
-                </header>
-
-                <div class="entry-content">
-<footer class="blog_post_dateline">
-        <span>Wed 29 January 2014</span>
-<span>| tags: <a href="https://samfrances.co.uk/tag/javascript.html">javascript</a>, <a href="https://samfrances.co.uk/tag/html5.html">html5</a>, <a href="https://samfrances.co.uk/tag/tutorials.html">tutorials</a>, <a href="https://samfrances.co.uk/tag/design-patterns.html">design-patterns</a></span>
-</footer><!-- /.post-info -->                <p class="first last">Here's a simple javascript todo list application, which I created as an exercise in javascript MVC without a framework.</p>
-
-                <p><a class="readmore" href="https://samfrances.co.uk/posts/2014/Jan/29/mvc-todo-list-demo/">read more</a></p>
-                </div><!-- /.entry-content -->
-            </article></li>
             </ol><!-- /#posts-list -->
 <p class="paginator">
     Page 1 / 2
@@ -325,7 +127,7 @@ code to be shared between sync and async clients. Comments welcome.</p>
     <h3>Tags</h3>
 
     <p> 
-<a href="https://samfrances.co.uk/tag/python.html">python</a>, <a href="https://samfrances.co.uk/tag/asyncio.html">asyncio</a>, <a href="https://samfrances.co.uk/tag/async.html">async</a>, <a href="https://samfrances.co.uk/tag/javascript.html">javascript</a>, <a href="https://samfrances.co.uk/tag/node.html">node</a>, <a href="https://samfrances.co.uk/tag/aws.html">aws</a>, <a href="https://samfrances.co.uk/tag/ansible.html">ansible</a>, <a href="https://samfrances.co.uk/tag/pelican.html">pelican</a>, <a href="https://samfrances.co.uk/tag/html5.html">html5</a>, <a href="https://samfrances.co.uk/tag/tutorials.html">tutorials</a>, <a href="https://samfrances.co.uk/tag/design-patterns.html">design-patterns</a>, <a href="https://samfrances.co.uk/tag/canvas.html">canvas</a>, <a href="https://samfrances.co.uk/tag/django.html">django</a>    </p>
+<a href="https://samfrances.co.uk/tag/twitterbot.html">twitterbot</a>, <a href="https://samfrances.co.uk/tag/twitter.html">twitter</a>, <a href="https://samfrances.co.uk/tag/python.html">python</a>, <a href="https://samfrances.co.uk/tag/asyncio.html">asyncio</a>, <a href="https://samfrances.co.uk/tag/async.html">async</a>, <a href="https://samfrances.co.uk/tag/javascript.html">javascript</a>, <a href="https://samfrances.co.uk/tag/node.html">node</a>, <a href="https://samfrances.co.uk/tag/aws.html">aws</a>, <a href="https://samfrances.co.uk/tag/ansible.html">ansible</a>, <a href="https://samfrances.co.uk/tag/pelican.html">pelican</a>, <a href="https://samfrances.co.uk/tag/html5.html">html5</a>, <a href="https://samfrances.co.uk/tag/tutorials.html">tutorials</a>, <a href="https://samfrances.co.uk/tag/design-patterns.html">design-patterns</a>, <a href="https://samfrances.co.uk/tag/canvas.html">canvas</a>, <a href="https://samfrances.co.uk/tag/django.html">django</a>    </p>
     
     <h3>Feeds</h3>
     
