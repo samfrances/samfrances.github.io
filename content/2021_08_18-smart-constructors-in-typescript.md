@@ -1,7 +1,7 @@
 Title: "Smart constructors" in Typescript
-Date: 2021-08-18 16:00
+Date: 2021-08-19 16:00
 UniqueId: 2021-04-3-smart-constructors-in-typescript-f3f37b4f-a33b-4b1b-b072-e4471e5cc686
-Modified: 2021-08-18 16:00
+Modified: 2021-08-19 16:00
 Category: Blog
 Tags: typescript, types
 Slug: smart-constructors-in-typescript
@@ -247,7 +247,7 @@ To get around this, we have to use a neat trick with `unique symbol` to simulate
 
 // ref.ts
 
-const sha256regex= /^[A-Fa-f0-9]{64}$/
+const sha256regex= /^[A-Fa-f0-9]{64}$/;
 
 declare const RefType: unique symbol;
 
@@ -270,7 +270,7 @@ Now, the following will not compile:
 ```
 :::typescript
 // This won't compile any more
-const sneakyRef: Ref = { value: "not a valid ref" }
+const sneakyRef: Ref = { value: "not a valid ref" };
 ```
 
 The great thing about this technique is that it only applies at the type level. If you look at the generated javascript code, the `[RefType]` field is removed.
@@ -299,7 +299,7 @@ Another way to get around our smart constructor is to create a subclass of `Ref`
 
 const validRefString = "beefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef";
 
-export default class SneakyRefSubclass extends Ref{
+export default class SneakyRefSubclass extends Ref {
   value: string;
   constructor(value: string) {
     super(validRefString);
@@ -355,13 +355,13 @@ Now our `SneakyRefSubclass` will no longer compile.
 
 ### Complete example
 
-Here's the complete example, with a bits of tidying up here and there.
+Here's the complete example, with a bit of tidying up here and there.
 
 ```
 #!typescript
 // ref.ts
 
-const sha256regex= /^[A-Fa-f0-9]{64}$/
+const sha256regex= /^[A-Fa-f0-9]{64}$/;
 
 declare const RefType: unique symbol;
 
@@ -437,3 +437,43 @@ hb.get_file(createRef(validRefString));
 // Throws an error
 hb.get_file(createRef(badRefString));
 ```
+
+### Conclusion: Why care?
+
+Ultimately, this pattern reduces the burden of validation by removing the dilemma of where and when to run the validation function. You run validation code when creating a value, and from that point onwards you can trust that you have a valid item. That alone is worth the price of having to wrap your primitive values.
+
+But the truth is, you should probably be wrapping your primitive values anyway. Conceptually, a string is rarely a string, but a name, an email address, a uuid etc.; an integer is rarely an integer - rather its a temperature, a timestamp, a width, an age etc.
+
+NASA found this out to their peril in 1999.
+
+> The Mars Climate Orbiter crashed and disintegrated in the Mars atmosphere because a component developed by Lockheed provided momentum measured in pound-force seconds, while another component developed by NASA expected momentum as Newton seconds. *-- [Vlad Riscutia](https://vladris.com/blog/2018/09/09/clean-code-types.html)*
+
+Who knows? Maybe this disaster could have been averted by function parameters which accepted `NewtonSeconds` rather than `int`.
+
+I also want to emphasize that smart constructors are not the only way to enforce complex constraints using the type system.
+
+Take the related example of validating a hex colour. You could use a smart constructor very similar to `Ref`, or you could do something like the following (warning: Not the most efficient way to store hex colours!):
+
+```
+type HexDigit = "0"|"1"|"2"|"3"|"4"|"5"|"6"|"7"|"8"|"9"|"a"|"b"|"c"|"d"|"e"|"f";
+
+type HexColor = [HexDigit, HexDigit, HexDigit, HexDigit, HexDigit, HexDigit];
+
+const red: HexColor = ["f", "f", "0", "0", "0", "0"];
+
+const wont_compile: HexColor = ["f", "f", "0", "@", "0", "0"];
+
+const wont_compile_either: HexColor = ["f", "f"];
+```
+
+How far these approaches will take you, and under what circumstances, is a discussion for another day.
+
+### Further reading
+
+* Articles
+    - [Designing with types: Single case union types](https://fsharpforfunandprofit.com/posts/designing-with-types-single-case-dus/) by [Scott Wlaschin](https://fsharpforfunandprofit.com/)
+    - [The Integrity of Simple Values](https://medium.com/pragmatic-programmers/the-integrity-of-simple-v-alues-1fbbd2e7f4a8) by [Scott Wlaschin](https://fsharpforfunandprofit.com/)
+    - [Clean Code: Types](https://vladris.com/blog/2018/09/09/clean-code-types.html) by [Vlad Riscutia](https://vladris.com/)
+* Books
+    - [Programming with Types](https://www.manning.com/books/programming-with-types) by [Vlad Riscutia](https://vladris.com/)
+    - [Domain Modelling Made Functional](https://pragprog.com/titles/swdddf/domain-modeling-made-functional/) by [Scott Wlaschin](https://fsharpforfunandprofit.com/)
