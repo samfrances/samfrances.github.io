@@ -1,4 +1,4 @@
-Title: "Smart constructors" in Typescript
+"Smart constructors" in Typescript
 Date: 2021-08-19 16:00
 UniqueId: 2021-04-3-smart-constructors-in-typescript-f3f37b4f-a33b-4b1b-b072-e4471e5cc686
 Modified: 2021-08-19 16:00
@@ -127,8 +127,8 @@ class HashbinClient {
   }
 
   private helper(ref: string) {
-      // validateRef(ref)   // Yay or nay?
-      console.log("Do I revalidate or don't I?")
+    // validateRef(ref)   // Yay or nay?
+    console.log("Do I revalidate or don't I?")
   }
 
 }
@@ -273,7 +273,7 @@ Now, the following will not compile:
 const sneakyRef: Ref = { value: "not a valid ref" };
 ```
 
-The great thing about this technique is that it only applies at the type level. If you look at the generated javascript code, the `[RefType]` field is removed.
+The great thing about this technique is that it only applies at the type level. If you look at the generated JavaScript code, the `[RefType]` field is removed.
 
 ```
 :::javascript
@@ -442,13 +442,13 @@ hb.get_file(createRef(badRefString));
 
 Ultimately, this pattern reduces the burden of validation by removing the dilemma of where and when to run the validation function. You run validation code when creating a value, and from that point onwards you can trust that you have a valid item. That alone is worth the price of having to wrap your primitive values.
 
-But the truth is, you should probably be wrapping your primitive values anyway. Conceptually, a string is rarely a string, but a name, an email address, a uuid etc.; an integer is rarely an integer - rather its a temperature, a timestamp, a width, an age etc.
+But the truth is, you should probably be wrapping your primitive values anyway. Conceptually, a string is rarely a string, but a name, an email address, a uuid etc.; an integer is rarely an integer - rather it's a temperature, a timestamp, a width, an age etc.
 
 NASA found this out to their peril in 1999.
 
 > The Mars Climate Orbiter crashed and disintegrated in the Mars atmosphere because a component developed by Lockheed provided momentum measured in pound-force seconds, while another component developed by NASA expected momentum as Newton seconds. *-- [Vlad Riscutia](https://vladris.com/blog/2018/09/09/clean-code-types.html)*
 
-Who knows? Maybe this disaster could have been averted by function parameters which accepted `NewtonSeconds` rather than `int`.
+Who knows? Maybe this disaster could have been averted by function parameters which accepted `NewtonSeconds` or `PoundForceSeconds` rather than `int`.
 
 I also want to emphasize that smart constructors are not the only way to enforce complex constraints using the type system.
 
