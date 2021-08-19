@@ -43,15 +43,498 @@
 
             <aside id="featured">
                 <article>
-                    <h2 class="blog_post_heading"><a href="https://samfrances.co.uk/posts/2021/Apr/03/retiring-grauniad-news-twitterbot/">Retiring the "Grauniad News" twitterbot</a></h2>
+                    <h2 class="blog_post_heading"><a href="https://samfrances.co.uk/posts/2021/Aug/19/smart-constructors-in-typescript/">"Smart constructors" in Typescript</a></h2>
 <footer class="blog_post_dateline">
-        <span>Sat 03 April 2021</span>
-<span>| tags: <a href="https://samfrances.co.uk/tag/twitterbot.html">twitterbot</a>, <a href="https://samfrances.co.uk/tag/twitter.html">twitter</a></span>
-</footer><!-- /.post-info --><p>After more than four years, I'm retiring the <a href="https://twitter.com/grauniad_news">"Grauniad News"</a> twitterbot. I'll be honest, I sort of forgot it was running! If you want to see misspelled Guardian headlines, you'll have to go to <a href="https://twitter.com/guardian">@guardian</a>.</p>                </article>
+        <span>Thu 19 August 2021</span>
+<span>| tags: <a href="https://samfrances.co.uk/tag/typescript.html">typescript</a>, <a href="https://samfrances.co.uk/tag/types.html">types</a></span>
+</footer><!-- /.post-info --><p>I want to share a small but very useful pattern which I discovered on the pages
+of two highly recommended books:</p>
+<ul>
+<li><a href="https://www.manning.com/books/programming-with-types">Programming with Types</a> by <a href="https://vladris.com/">Vlad Riscutia</a></li>
+<li><a href="https://pragprog.com/titles/swdddf/domain-modeling-made-functional/">Domain Modelling Made Functional</a> by <a href="https://fsharpforfunandprofit.com/">Scott Wlaschin</a></li>
+</ul>
+<p>In functional languages this pattern generally gets called "smart constructors", and it is the partial fulfilment of a wish that I have had for some time:</p>
+<blockquote>
+<p>I wish the type system could enforce more interesting constraints than "this must be a string" or "this must be a number", like "this must be a number between 1 and 5" or "this string must be a valid email address".</p>
+</blockquote>
+<h3>A motivating example</h3>
+<p>At <a href="https://www.cydarmedical.com/">Cydar</a>, we use a distributed content-addressable storage system we call "The Disthashbin", which lets you store and access files using their sha256 hash - or as we say around here, its "hashbin ref".</p>
+<p>Here's a very simplified outline of the client interface.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span> <span class="nx">HashbinClient</span> <span class="p">{</span>
+
+  <span class="nx">get_blob</span><span class="p">(</span><span class="nx">ref</span>: <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Getting blob: </span><span class="si">${</span><span class="nx">ref</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+  <span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div>
+
+<p>You use it as follows:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">const</span> <span class="nx">hb</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">HashbinClient</span><span class="p">();</span>
+
+<span class="kd">const</span> <span class="nx">validRef</span> <span class="o">=</span> <span class="s2">&quot;beefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef&quot;</span><span class="p">;</span>
+
+<span class="nx">hb</span><span class="p">.</span><span class="nx">get_blob</span><span class="p">(</span><span class="nx">validRef</span><span class="p">);</span>
+</code></pre></div>
+
+<p>In reality it would return some sort of Blob object with the content of the file, but you get the idea.</p>
+<p>An obvious issue with this code is that it will just as happily accept a string which is not a valid sha256 hash. The following will compile just fine:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">const</span> <span class="nx">badRef</span> <span class="o">=</span> <span class="s2">&quot;this is not a valid sha256 hash&quot;</span><span class="p">;</span>
+
+<span class="nx">hb</span><span class="p">.</span><span class="nx">get_blob</span><span class="p">(</span><span class="nx">badRef</span><span class="p">);</span>
+</code></pre></div>
+
+<h3>A validation function</h3>
+<p>If you're anything like me, your first instinct is to write a function like this:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">function</span> <span class="nx">validateRef</span><span class="p">(</span><span class="nx">ref</span>: <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">sha256regex</span> <span class="o">=</span> <span class="sr">/^[A-Fa-f0-9]{64}$/</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">sha256regex</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">ref</span><span class="p">))</span> <span class="p">{</span>
+    <span class="k">throw</span> <span class="ow">new</span> <span class="ne">Error</span><span class="p">(</span><span class="sb">`Invalid ref: </span><span class="si">${</span><span class="nx">ref</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="nx">HashbinClient</span> <span class="p">{</span>
+
+  <span class="nx">get_blob</span><span class="p">(</span><span class="nx">ref</span>: <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">validateRef</span><span class="p">(</span><span class="nx">ref</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Getting blob: </span><span class="si">${</span><span class="nx">ref</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+  <span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div>
+
+<p>However, now if we extend the API of the <code>HashbinClient</code> class, we have to remember to use the <code>validateRef</code> function in every public method that accepts a hashbin ref.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span> <span class="nx">HashbinClient</span> <span class="p">{</span>
+
+  <span class="nx">get_blob</span><span class="p">(</span><span class="nx">ref</span>: <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">validateRef</span><span class="p">(</span><span class="nx">ref</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Getting blob: </span><span class="si">${</span><span class="nx">ref</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="nx">get_file</span><span class="p">(</span><span class="nx">ref</span>: <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">validateRef</span><span class="p">(</span><span class="nx">ref</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Getting file: </span><span class="si">${</span><span class="nx">ref</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="nx">exists</span><span class="p">(</span><span class="nx">ref</span>: <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">validateRef</span><span class="p">(</span><span class="nx">ref</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Checking if ref exists: </span><span class="si">${</span><span class="nx">ref</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="nx">del</span><span class="p">(</span><span class="nx">ref</span>: <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">validateRef</span><span class="p">(</span><span class="nx">ref</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Deleting: </span><span class="si">${</span><span class="nx">ref</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+  <span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div>
+
+<p>We are also faced with a dilemma when it comes to helper methods. Should a helper method assume that the ref has already been validated at in the API method that calls it, or should it revalidate?</p>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span> <span class="nx">HashbinClient</span> <span class="p">{</span>
+
+  <span class="nx">get_blob</span><span class="p">(</span><span class="nx">ref</span>: <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">validateRef</span><span class="p">(</span><span class="nx">ref</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Getting blob: </span><span class="si">${</span><span class="nx">ref</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+    <span class="nx">helper</span><span class="p">(</span><span class="nx">ref</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="k">private</span> <span class="nx">helper</span><span class="p">(</span><span class="nx">ref</span>: <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// validateRef(ref);   // Yay or nay?</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Do I revalidate or don&#39;t I?&quot;</span><span class="p">);</span>
+  <span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Ultimately the only way to be sure is to check every caller of the helper function, or if that caller itself receives a ref, each of the caller's callers, and so on.</p>
+<p>Eventually, you (or another developer who is less familiar with the codebase) will forget to validate a ref in the right place, and you'll end up with an invalid hashbin ref somewhere deeper in your call stack.</p>
+<h3>A smart constructor</h3>
+<p>The first step towards a better solution is to stop thinking in terms of "strings which are valid hashbin refs", and instead think of hashbin refs as their own type. In other words, we need to get over our <a href="https://refactoring.guru/smells/primitive-obsession">primitive obsession</a>.</p>
+<p>We move our validation code into the <code>Ref</code> constructor, making it impossible to create an invalid hashbin ref.</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="c1">// ref.ts</span>
+
+<span class="kd">const</span> <span class="nx">sha256regex</span><span class="o">=</span> <span class="sr">/^[A-Fa-f0-9]{64}$/</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="kd">class</span> <span class="nx">Ref</span> <span class="p">{</span>
+  <span class="nx">value</span>: <span class="kt">string</span><span class="p">;</span>
+  <span class="kr">constructor</span><span class="p">(</span><span class="nx">value</span>: <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">sha256regex</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">value</span><span class="p">))</span> <span class="p">{</span>
+      <span class="k">throw</span> <span class="ow">new</span> <span class="ne">Error</span><span class="p">(</span><span class="sb">`Invalid ref: </span><span class="si">${</span><span class="nx">value</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+</td></tr></table>
+<p>We then update our <code>HashbinClient</code> accordingly.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span> <span class="nx">HashbinClient</span> <span class="p">{</span>
+
+  <span class="nx">get_blob</span><span class="p">(</span><span class="nx">ref</span>: <span class="kt">Ref</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Getting blob: </span><span class="si">${</span><span class="nx">ref</span><span class="p">.</span><span class="nx">value</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="nx">get_file</span><span class="p">(</span><span class="nx">ref</span>: <span class="kt">Ref</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Getting file: </span><span class="si">${</span><span class="nx">ref</span><span class="p">.</span><span class="nx">value</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="nx">exists</span><span class="p">(</span><span class="nx">ref</span>: <span class="kt">Ref</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Checking if ref exists: </span><span class="si">${</span><span class="nx">ref</span><span class="p">.</span><span class="nx">value</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="nx">del</span><span class="p">(</span><span class="nx">ref</span>: <span class="kt">Ref</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Deleting: </span><span class="si">${</span><span class="nx">ref</span><span class="p">.</span><span class="nx">value</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+  <span class="p">}</span>
+</code></pre></div>
+
+<p>This falls short of the dream of enforcing validity in the type-system itself, but it does use a combination of type-checking and runtime validation to ensure that you can never encounter an invalid hashbin ref.</p>
+<p>In other words, if you have a function (method, class etc.) which requires a <code>Ref</code> instance, you can be sure that the body of that function will never run with an invalid hashbin ref, because to do that you would have to first create an invalid hashbin ref to pass to the function, and we've made that impossible.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">const</span> <span class="nx">validRefString</span> <span class="o">=</span> <span class="s2">&quot;beefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef&quot;</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">badRefString</span> <span class="o">=</span> <span class="s2">&quot;this is not a valid hashbin ref&quot;</span><span class="p">;</span>
+
+<span class="c1">// This runs fine</span>
+<span class="nx">hb</span><span class="p">.</span><span class="nx">get_file</span><span class="p">(</span><span class="ow">new</span> <span class="nx">Ref</span><span class="p">(</span><span class="nx">validRefString</span><span class="p">));</span>
+
+<span class="c1">// This throws an error *before* get_file() has a chance to run</span>
+<span class="nx">hb</span><span class="p">.</span><span class="nx">get_file</span><span class="p">(</span><span class="ow">new</span> <span class="nx">Ref</span><span class="p">(</span><span class="nx">badRefString</span><span class="p">));</span>
+
+<span class="c1">// This won&#39;t compile</span>
+<span class="nx">hb</span><span class="p">.</span><span class="nx">get_blob</span><span class="p">(</span><span class="nx">badRefString</span><span class="p">);</span>
+</code></pre></div>
+
+<h3>Making sure values stay valid</h3>
+<p>You've probably already spotted a flaw in the code above, for although we have prevented you from creating an invalid hashbin ref, you can take a valid ref and then make it invalid.</p>
+<div class="highlight"><pre><span></span><code><span class="k">const</span> <span class="n">validRef</span> <span class="o">=</span> <span class="n">new</span> <span class="n">Ref</span><span class="p">(</span><span class="n">validRefString</span><span class="p">);</span>
+<span class="n">validRef</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">badRefString</span><span class="p">;</span>
+</code></pre></div>
+
+<p>In functional languages, this wouldn't be an issue, since data structures are generally immutable by default. But this is easy to fix with Typescript's <code>readonly</code> modifier.</p>
+<div class="highlight"><pre><span></span><code><span class="k">export</span> <span class="k">default</span> <span class="kd">class</span> <span class="nx">Ref</span> <span class="p">{</span>
+  <span class="k">readonly</span> <span class="nx">value</span>: <span class="kt">string</span><span class="p">;</span>
+  <span class="kr">constructor</span><span class="p">(</span><span class="nx">value</span>: <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">sha256regex</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">value</span><span class="p">))</span> <span class="p">{</span>
+      <span class="k">throw</span> <span class="ow">new</span> <span class="ne">Error</span><span class="p">(</span><span class="sb">`Invalid ref: </span><span class="si">${</span><span class="nx">value</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3>Structural typing gotchas</h3>
+<p>Typescript's structural type system also presents another escape hatch. This is because the type checker isn't checking whether items passed to a <code>Ref</code> parameter are instances of the <code>Ref</code> class. It only checks if they have the same structure as an instance of the <code>Ref</code> class, which in this case just means having a field called <code>value</code> which stores a <code>string</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// This compiles</span>
+<span class="kd">const</span> <span class="nx">sneakyRef</span>: <span class="kt">Ref</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;not a valid ref&quot;</span> <span class="p">};</span>
+</code></pre></div>
+
+<p>To get around this, we have to use a neat trick with <code>unique symbol</code> to simulate nominal typing.</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="c1">// ref.ts</span>
+
+<span class="kd">const</span> <span class="nx">sha256regex</span><span class="o">=</span> <span class="sr">/^[A-Fa-f0-9]{64}$/</span><span class="p">;</span>
+
+<span class="kr">declare</span> <span class="kd">const</span> <span class="nx">RefType</span>: <span class="kt">unique</span> <span class="nx">symbol</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="kd">class</span> <span class="nx">Ref</span> <span class="p">{</span>
+  <span class="p">[</span><span class="nx">RefType</span><span class="p">]</span><span class="o">:</span> <span class="ow">void</span><span class="p">;</span>
+  <span class="k">readonly</span> <span class="nx">value</span>: <span class="kt">string</span><span class="p">;</span>
+  <span class="kr">constructor</span><span class="p">(</span><span class="nx">value</span>: <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">sha256regex</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">value</span><span class="p">))</span> <span class="p">{</span>
+      <span class="k">throw</span> <span class="ow">new</span> <span class="ne">Error</span><span class="p">(</span><span class="sb">`Invalid ref: </span><span class="si">${</span><span class="nx">value</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+</td></tr></table>
+<p>This <code>unique symbol</code> type is private to the <code>ref</code> module. As long as we don't export it, nothing outside of the <code>ref</code> module can create something using that symbol.</p>
+<p>Now, the following will not compile:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// This won&#39;t compile any more</span>
+<span class="kd">const</span> <span class="nx">sneakyRef</span>: <span class="kt">Ref</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;not a valid ref&quot;</span> <span class="p">};</span>
+</code></pre></div>
+
+<p>The great thing about this technique is that it only applies at the type level. If you look at the generated JavaScript code, the <code>[RefType]</code> field is removed.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">const</span> <span class="nx">sha256regex</span> <span class="o">=</span> <span class="sr">/^[A-Fa-f0-9]{64}$/</span><span class="p">;</span>
+<span class="k">export</span> <span class="k">default</span> <span class="kd">class</span> <span class="nx">Ref</span> <span class="p">{</span>
+    <span class="kr">constructor</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">sha256regex</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">value</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">throw</span> <span class="ow">new</span> <span class="ne">Error</span><span class="p">(</span><span class="sb">`Invalid ref: </span><span class="si">${</span><span class="nx">value</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>This means that if you need to use instances of <code>Ref</code> in contexts where you only want to use serializable values (e.g. as part of <a href="https://redux.js.org/">redux</a> state), this won't present an issue.</p>
+<h3>Private constructor</h3>
+<p>Another way to get around our smart constructor is to create a subclass of <code>Ref</code> that will nullify our validation.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">const</span> <span class="nx">validRefString</span> <span class="o">=</span> <span class="s2">&quot;beefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef&quot;</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="kd">class</span> <span class="nx">SneakyRefSubclass</span> <span class="k">extends</span> <span class="nx">Ref</span> <span class="p">{</span>
+  <span class="nx">value</span>: <span class="kt">string</span><span class="p">;</span>
+  <span class="kr">constructor</span><span class="p">(</span><span class="nx">value</span>: <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">super</span><span class="p">(</span><span class="nx">validRefString</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Any parameter which requires a <code>Ref</code> will also accept an instance of a subclass of <code>Ref</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Disaster!</span>
+
+<span class="c1">// This runs without raising an error</span>
+<span class="kd">const</span> <span class="nx">sneakyRef</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">SneakyRefSubclass</span><span class="p">(</span><span class="s2">&quot;bad ref&quot;</span><span class="p">);</span>
+
+<span class="c1">// And this compiles!</span>
+<span class="nx">hb</span><span class="p">.</span><span class="nx">get_file</span><span class="p">(</span><span class="nx">sneakyRef</span><span class="p">);</span>
+</code></pre></div>
+
+<p>To stop this from happening, we have to forbid subclassing of <code>Ref</code>. At the time of writing, Typescript doesn't have a <code>final</code> modifier, so you can't do this:</p>
+<div class="highlight"><pre><span></span><code><span class="kr">final</span> <span class="kd">class</span> <span class="nx">Ref</span> <span class="p">{</span>
+    <span class="c1">// etc.</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>What you can do is make the constructor private, which prevents subclassing, and also stops code outside of the class from creating an instance using <code>new</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="k">export</span> <span class="k">default</span> <span class="kd">class</span> <span class="nx">Ref</span> <span class="p">{</span>
+  <span class="p">[</span><span class="nx">RefType</span><span class="p">]</span><span class="o">:</span> <span class="ow">void</span><span class="p">;</span>
+  <span class="k">readonly</span> <span class="nx">value</span>: <span class="kt">string</span><span class="p">;</span>
+  <span class="k">private</span> <span class="kr">constructor</span><span class="p">(</span><span class="nx">value</span>: <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">sha256regex</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">value</span><span class="p">))</span> <span class="p">{</span>
+      <span class="k">throw</span> <span class="ow">new</span> <span class="ne">Error</span><span class="p">(</span><span class="sb">`Invalid ref: </span><span class="si">${</span><span class="nx">value</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="c1">// This is how we create instances now</span>
+  <span class="k">static</span> <span class="nx">create</span><span class="p">(</span><span class="nx">value</span>: <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="ow">new</span> <span class="nx">Ref</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Now our <code>SneakyRefSubclass</code> will no longer compile.</p>
+<h3>Complete example</h3>
+<p>Here's the complete example, with a bit of tidying up here and there.</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="c1">// ref.ts</span>
+
+<span class="kd">const</span> <span class="nx">sha256regex</span><span class="o">=</span> <span class="sr">/^[A-Fa-f0-9]{64}$/</span><span class="p">;</span>
+
+<span class="kr">declare</span> <span class="kd">const</span> <span class="nx">RefType</span>: <span class="kt">unique</span> <span class="nx">symbol</span><span class="p">;</span>
+
+<span class="kd">class</span> <span class="nx">Ref</span> <span class="p">{</span>
+  <span class="p">[</span><span class="nx">RefType</span><span class="p">]</span><span class="o">:</span> <span class="ow">void</span><span class="p">;</span>
+  <span class="k">readonly</span> <span class="nx">value</span>: <span class="kt">string</span><span class="p">;</span>
+  <span class="k">private</span> <span class="kr">constructor</span><span class="p">(</span><span class="nx">value</span>: <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">sha256regex</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">value</span><span class="p">))</span> <span class="p">{</span>
+      <span class="k">throw</span> <span class="ow">new</span> <span class="ne">Error</span><span class="p">(</span><span class="sb">`Invalid ref: </span><span class="si">${</span><span class="nx">value</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="k">static</span> <span class="nx">create</span><span class="p">(</span><span class="nx">value</span>: <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="ow">new</span> <span class="nx">Ref</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Only export the type, since clients of this module</span>
+<span class="c1">// don&#39;t need access to the runtime class</span>
+<span class="k">export</span> <span class="kr">type</span> <span class="p">{</span> <span class="nx">Ref</span> <span class="p">};</span>
+
+<span class="c1">// No need to reveal externally that we&#39;re using a class,</span>
+<span class="c1">// So export a factory function</span>
+<span class="k">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">create</span><span class="p">(</span><span class="nx">value</span>: <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">Ref</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+</td></tr></table>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="c1">// hashbin-client.ts</span>
+
+<span class="k">import</span> <span class="kr">type</span> <span class="p">{</span> <span class="nx">Ref</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&quot;./ref&quot;</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="kd">class</span> <span class="nx">HashbinClient</span> <span class="p">{</span>
+
+  <span class="nx">get_blob</span><span class="p">(</span><span class="nx">ref</span>: <span class="kt">Ref</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Getting blob: </span><span class="si">${</span><span class="nx">ref</span><span class="p">.</span><span class="nx">value</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="nx">get_file</span><span class="p">(</span><span class="nx">ref</span>: <span class="kt">Ref</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Getting file: </span><span class="si">${</span><span class="nx">ref</span><span class="p">.</span><span class="nx">value</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="nx">exists</span><span class="p">(</span><span class="nx">ref</span>: <span class="kt">Ref</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Checking if ref exists: </span><span class="si">${</span><span class="nx">ref</span><span class="p">.</span><span class="nx">value</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="nx">del</span><span class="p">(</span><span class="nx">ref</span>: <span class="kt">Ref</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Deleting: </span><span class="si">${</span><span class="nx">ref</span><span class="p">.</span><span class="nx">value</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+  <span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div>
+</td></tr></table>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="c1">// index.ts</span>
+
+<span class="k">import</span> <span class="nx">createRef</span> <span class="kr">from</span> <span class="s2">&quot;./ref&quot;</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">HashbinClient</span> <span class="kr">from</span> <span class="s2">&quot;./hashbin-client&quot;</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">hb</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">HashbinClient</span><span class="p">();</span>
+
+<span class="kd">const</span> <span class="nx">validRefString</span> <span class="o">=</span> <span class="s2">&quot;beefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef&quot;</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">badRefString</span> <span class="o">=</span> <span class="s2">&quot;this is not a valid hashbin ref&quot;</span>
+
+<span class="nx">hb</span><span class="p">.</span><span class="nx">get_file</span><span class="p">(</span><span class="nx">createRef</span><span class="p">(</span><span class="nx">validRefString</span><span class="p">));</span>
+
+<span class="c1">// Throws an error</span>
+<span class="nx">hb</span><span class="p">.</span><span class="nx">get_file</span><span class="p">(</span><span class="nx">createRef</span><span class="p">(</span><span class="nx">badRefString</span><span class="p">));</span>
+</code></pre></div>
+</td></tr></table>
+<h3>Conclusion: Why care?</h3>
+<p>Ultimately, this pattern reduces the burden of validation by removing the dilemma of where and when to run the validation function. You run validation code when creating a value, and from that point onwards you can trust that you have a valid item. That alone is worth the price of having to wrap your primitive values.</p>
+<p>But the truth is, you should probably be wrapping your primitive values anyway. Conceptually, a string is rarely a string, but a name, an email address, a uuid etc.; an integer is rarely an integer - rather it's a temperature, a timestamp, a width, an age etc.</p>
+<p>NASA found this out to their peril in 1999.</p>
+<blockquote>
+<p>The Mars Climate Orbiter crashed and disintegrated in the Mars atmosphere because a component developed by Lockheed provided momentum measured in pound-force seconds, while another component developed by NASA expected momentum as Newton seconds. <em>-- <a href="https://vladris.com/blog/2018/09/09/clean-code-types.html">Vlad Riscutia</a></em></p>
+</blockquote>
+<p>Who knows? Maybe this disaster could have been averted by function parameters which accepted <code>NewtonSeconds</code> or <code>PoundForceSeconds</code> rather than <code>int</code>.</p>
+<p>I also want to emphasize that smart constructors are not the only way to enforce complex constraints using the type system.</p>
+<p>Take the related example of validating a hex colour. You could use a smart constructor very similar to <code>Ref</code>, or you could do something like the following (warning: Not the most efficient way to store hex colours!):</p>
+<div class="highlight"><pre><span></span><code><span class="n">type</span><span class="w"> </span><span class="n">HexDigit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;0&quot;</span><span class="o">|</span><span class="s">&quot;1&quot;</span><span class="o">|</span><span class="s">&quot;2&quot;</span><span class="o">|</span><span class="s">&quot;3&quot;</span><span class="o">|</span><span class="s">&quot;4&quot;</span><span class="o">|</span><span class="s">&quot;5&quot;</span><span class="o">|</span><span class="s">&quot;6&quot;</span><span class="o">|</span><span class="s">&quot;7&quot;</span><span class="o">|</span><span class="s">&quot;8&quot;</span><span class="o">|</span><span class="s">&quot;9&quot;</span><span class="o">|</span><span class="s">&quot;a&quot;</span><span class="o">|</span><span class="s">&quot;b&quot;</span><span class="o">|</span><span class="s">&quot;c&quot;</span><span class="o">|</span><span class="s">&quot;d&quot;</span><span class="o">|</span><span class="s">&quot;e&quot;</span><span class="o">|</span><span class="s">&quot;f&quot;</span><span class="p">;</span><span class="w"></span>
+
+<span class="n">type</span><span class="w"> </span><span class="n">HexColor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">HexDigit</span><span class="p">,</span><span class="w"> </span><span class="n">HexDigit</span><span class="p">,</span><span class="w"> </span><span class="n">HexDigit</span><span class="p">,</span><span class="w"> </span><span class="n">HexDigit</span><span class="p">,</span><span class="w"> </span><span class="n">HexDigit</span><span class="p">,</span><span class="w"> </span><span class="n">HexDigit</span><span class="p">];</span><span class="w"></span>
+
+<span class="k">const</span><span class="w"> </span><span class="nl">red</span><span class="p">:</span><span class="w"> </span><span class="n">HexColor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s">&quot;f&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;f&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;0&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;0&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;0&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;0&quot;</span><span class="p">];</span><span class="w"></span>
+
+<span class="k">const</span><span class="w"> </span><span class="nl">wont_compile</span><span class="p">:</span><span class="w"> </span><span class="n">HexColor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s">&quot;f&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;f&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;0&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;@&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;0&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;0&quot;</span><span class="p">];</span><span class="w"></span>
+
+<span class="k">const</span><span class="w"> </span><span class="nl">wont_compile_either</span><span class="p">:</span><span class="w"> </span><span class="n">HexColor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s">&quot;f&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;f&quot;</span><span class="p">];</span><span class="w"></span>
+</code></pre></div>
+
+<p>How far these approaches will take you, and under what circumstances, is a discussion for another day.</p>
+<h3>Further reading</h3>
+<ul>
+<li>Articles<ul>
+<li><a href="https://fsharpforfunandprofit.com/posts/designing-with-types-single-case-dus/">Designing with types: Single case union types</a> by <a href="https://fsharpforfunandprofit.com/">Scott Wlaschin</a></li>
+<li><a href="https://medium.com/pragmatic-programmers/the-integrity-of-simple-v-alues-1fbbd2e7f4a8">The Integrity of Simple Values</a> by <a href="https://fsharpforfunandprofit.com/">Scott Wlaschin</a></li>
+<li><a href="https://vladris.com/blog/2018/09/09/clean-code-types.html">Clean Code: Types</a> by <a href="https://vladris.com/">Vlad Riscutia</a></li>
+</ul>
+</li>
+<li>Books<ul>
+<li><a href="https://www.manning.com/books/programming-with-types">Programming with Types</a> by <a href="https://vladris.com/">Vlad Riscutia</a></li>
+<li><a href="https://pragprog.com/titles/swdddf/domain-modeling-made-functional/">Domain Modelling Made Functional</a> by <a href="https://fsharpforfunandprofit.com/">Scott Wlaschin</a></li>
+</ul>
+</li>
+</ul>                </article>
             </aside><!-- /#featured -->
                 <section id="other_articles">
                     <h2>Other articles</h2>
                     <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h2 class="blog_post_heading"><a href="https://samfrances.co.uk/posts/2021/Apr/03/retiring-grauniad-news-twitterbot/" rel="bookmark"
+                           title="Permalink to Retiring the "Grauniad News" twitterbot">Retiring the "Grauniad News" twitterbot</a></h2>
+                </header>
+
+                <div class="entry-content">
+<footer class="blog_post_dateline">
+        <span>Sat 03 April 2021</span>
+<span>| tags: <a href="https://samfrances.co.uk/tag/twitterbot.html">twitterbot</a>, <a href="https://samfrances.co.uk/tag/twitter.html">twitter</a></span>
+</footer><!-- /.post-info -->                <p>I'm retiring the "Grauniad News" twitterbot</p>
+                <p><a class="readmore" href="https://samfrances.co.uk/posts/2021/Apr/03/retiring-grauniad-news-twitterbot/">read more</a></p>
+                </div><!-- /.entry-content -->
+            </article></li>
 
             <li><article class="hentry">
                 <header>
@@ -97,21 +580,6 @@
                 <p><a class="readmore" href="https://samfrances.co.uk/posts/2015/Aug/08/a-monkey-island-inspired-twitterbot/">read more</a></p>
                 </div><!-- /.entry-content -->
             </article></li>
-
-            <li><article class="hentry">
-                <header>
-                    <h2 class="blog_post_heading"><a href="https://samfrances.co.uk/posts/2015/Aug/06/relaunching-with-pelican/" rel="bookmark"
-                           title="Permalink to Relaunching with Pelican">Relaunching with Pelican</a></h2>
-                </header>
-
-                <div class="entry-content">
-<footer class="blog_post_dateline">
-        <span>Thu 06 August 2015</span>
-<span>| tags: <a href="https://samfrances.co.uk/tag/python.html">python</a>, <a href="https://samfrances.co.uk/tag/pelican.html">pelican</a></span>
-</footer><!-- /.post-info -->                <p>After realising that my django-powered site was running on a dangerously old version of django, I've decided to relaunch the site using pelican.</p>
-                <p><a class="readmore" href="https://samfrances.co.uk/posts/2015/Aug/06/relaunching-with-pelican/">read more</a></p>
-                </div><!-- /.entry-content -->
-            </article></li>
             </ol><!-- /#posts-list -->
 <p class="paginator">
     Page 1 / 2
@@ -127,7 +595,7 @@
     <h3>Tags</h3>
 
     <p> 
-<a href="https://samfrances.co.uk/tag/twitterbot.html">twitterbot</a>, <a href="https://samfrances.co.uk/tag/twitter.html">twitter</a>, <a href="https://samfrances.co.uk/tag/python.html">python</a>, <a href="https://samfrances.co.uk/tag/asyncio.html">asyncio</a>, <a href="https://samfrances.co.uk/tag/async.html">async</a>, <a href="https://samfrances.co.uk/tag/javascript.html">javascript</a>, <a href="https://samfrances.co.uk/tag/node.html">node</a>, <a href="https://samfrances.co.uk/tag/aws.html">aws</a>, <a href="https://samfrances.co.uk/tag/ansible.html">ansible</a>, <a href="https://samfrances.co.uk/tag/pelican.html">pelican</a>, <a href="https://samfrances.co.uk/tag/html5.html">html5</a>, <a href="https://samfrances.co.uk/tag/tutorials.html">tutorials</a>, <a href="https://samfrances.co.uk/tag/design-patterns.html">design-patterns</a>, <a href="https://samfrances.co.uk/tag/canvas.html">canvas</a>, <a href="https://samfrances.co.uk/tag/django.html">django</a>    </p>
+<a href="https://samfrances.co.uk/tag/typescript.html">typescript</a>, <a href="https://samfrances.co.uk/tag/types.html">types</a>, <a href="https://samfrances.co.uk/tag/twitterbot.html">twitterbot</a>, <a href="https://samfrances.co.uk/tag/twitter.html">twitter</a>, <a href="https://samfrances.co.uk/tag/python.html">python</a>, <a href="https://samfrances.co.uk/tag/asyncio.html">asyncio</a>, <a href="https://samfrances.co.uk/tag/async.html">async</a>, <a href="https://samfrances.co.uk/tag/javascript.html">javascript</a>, <a href="https://samfrances.co.uk/tag/node.html">node</a>, <a href="https://samfrances.co.uk/tag/aws.html">aws</a>, <a href="https://samfrances.co.uk/tag/ansible.html">ansible</a>, <a href="https://samfrances.co.uk/tag/pelican.html">pelican</a>, <a href="https://samfrances.co.uk/tag/html5.html">html5</a>, <a href="https://samfrances.co.uk/tag/tutorials.html">tutorials</a>, <a href="https://samfrances.co.uk/tag/design-patterns.html">design-patterns</a>, <a href="https://samfrances.co.uk/tag/canvas.html">canvas</a>, <a href="https://samfrances.co.uk/tag/django.html">django</a>    </p>
     
     <h3>Feeds</h3>
     
