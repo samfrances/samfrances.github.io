@@ -1,4 +1,4 @@
-"Smart constructors" in Typescript
+Title: "Smart constructors" in Typescript
 Date: 2021-08-19 16:00
 UniqueId: 2021-04-3-smart-constructors-in-typescript-f3f37b4f-a33b-4b1b-b072-e4471e5cc686
 Modified: 2021-08-19 16:00
@@ -67,7 +67,7 @@ If you're anything like me, your first instinct is to write a function like this
 :::typescript
 
 function validateRef(ref: string) {
-  const sha256regex = /^[A-Fa-f0-9]{64}$/
+  const sha256regex = /^[A-Fa-f0-9]{64}$/;
   if (!sha256regex.test(ref)) {
     throw new Error(`Invalid ref: ${ref}`);
   }
@@ -127,8 +127,8 @@ class HashbinClient {
   }
 
   private helper(ref: string) {
-    // validateRef(ref)   // Yay or nay?
-    console.log("Do I revalidate or don't I?")
+    // validateRef(ref);   // Yay or nay?
+    console.log("Do I revalidate or don't I?");
   }
 
 }
@@ -148,7 +148,7 @@ We move our validation code into the `Ref` constructor, making it impossible to 
 #!typescript
 // ref.ts
 
-const sha256regex= /^[A-Fa-f0-9]{64}$/
+const sha256regex= /^[A-Fa-f0-9]{64}$/;
 
 export default class Ref {
   value: string;
@@ -237,7 +237,7 @@ Typescript's structural type system also presents another escape hatch. This is 
 ```
 :::typescript
 // This compiles
-const sneakyRef: Ref = { value: "not a valid ref" }
+const sneakyRef: Ref = { value: "not a valid ref" };
 ```
 
 To get around this, we have to use a neat trick with `unique symbol` to simulate nominal typing.
@@ -387,9 +387,8 @@ export type { Ref };
 // No need to reveal externally that we're using a class,
 // So export a factory function
 export default function create(value: string) {
-  return Ref.create(value)
+  return Ref.create(value);
 }
-
 ```
 
 ```
@@ -417,13 +416,14 @@ export default class HashbinClient {
   }
 
 }
+
 ```
 
 ```
 #!typescript
 // index.ts
 
-import createRef from "./ref"
+import createRef from "./ref";
 import HashbinClient from "./hashbin-client";
 
 const hb = new HashbinClient();
