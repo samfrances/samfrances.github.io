@@ -1,12 +1,12 @@
 Title: "Smart constructors" in Typescript
-Date: 2021-08-19 16:00
+Date: 2021-08-19 13:55
 UniqueId: 2021-04-3-smart-constructors-in-typescript-f3f37b4f-a33b-4b1b-b072-e4471e5cc686
-Modified: 2021-08-19 16:00
+Modified: 2021-08-19 13:55
 Category: Blog
 Tags: typescript, types
 Slug: smart-constructors-in-typescript
 Authors:
-Summary: A useful pattern for constrained types
+Summary: A useful pattern for implementing complex guarantees with the help of the type system
 
 I want to share a small but very useful pattern which I discovered on the pages
 of two highly recommended books:
